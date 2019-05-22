@@ -5,6 +5,10 @@
  * Author : tinhl
  */ 
 
+#define unsch unsigned char
+#define unssh unsigned short
+#define unsl unsigned long
+
 #include <avr/io.h>
 
 
