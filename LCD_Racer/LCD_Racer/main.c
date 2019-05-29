@@ -64,8 +64,26 @@ void refreshScreen() {
 	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
 	drawPlayer();
 	drawProjectile();
-	drawEnemies()
+	drawEnemies();
 }	
+
+void gameOverScreen1() {
+	unsch temp_array[6];
+	
+	LCD_ClearScreen();
+	LCD_DisplayString_NoClear(1, (const unsch *)("**GAME OVER**"));
+	LCD_DisplayString_NoClear(17, (const unsch *)("SCORE: "));
+	LCD_DisplayString_NoClear(24, LCD_To_String(sTime, temp_array, 6));
+}
+
+void gameOverScreen2() {
+	unsch temp_array[6];
+	
+	LCD_ClearScreen();
+	LCD_DisplayString_NoClear(1, (const unsch *)("Congratulations!"));
+	LCD_DisplayString_NoClear(17, (const unsch *)("Hi SCORE: "));
+	LCD_DisplayString_NoClear(27, LCD_To_String(sTime, temp_array, 6));
+}
 
 int main(void)
 {
