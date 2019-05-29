@@ -11,6 +11,8 @@
 #include "defines.h"
 #include "io.c"
 #include "not_player.h"
+#include "stateMachines.h"
+#include "joystick.c"
 
 //sprites
 const unssh INVICIBLE_ENEMY = 248;
