@@ -6,13 +6,23 @@
  * Author : tinhl
  */ 
 
-#define unsch unsigned char
-#define unssh unsigned short
-#define unsl unsigned long
-
 #include <avr/io.h>
+#include <avr/eeprom.h>
+#include "defines.h"
 #include "io.c"
 
+//sprites
+const unssh INVICIBLE_ENEMY = 248;
+const unssh DESTROYABLE_ENEMY = 244;
+const unssh PROJECTILE_SPRITE = 45;
+
+unsch player;
+unsch en_move_count, enMoveMult = 2;
+unsch lTime, mTime = 0;
+unssh sTime, gTime;
+unsch spawnTopLimit = 0;
+unsch spawnBottomLimit = 0;
+unsch projectileExists = 0;
 
 int main(void)
 {
