@@ -1,14 +1,10 @@
 #pragma once
 #include <avr/eeprom.h>
 #include "defines.h"
+#include "pwm.c"
 unsch b1 = 0;
 unsch b2 = 0;
 unsch b3 = 0;
-
-//unsch end1 = 0;
-//unsch end2 = 0;
-
-//global variables
 
 const unssh INVICIBLE_ENEMY = 248;
 const unssh DESTROYABLE_ENEMY = 244;
@@ -24,6 +20,31 @@ unsch projectileExists = 0;
 
 not_player en[total_en];
 not_player projectileObject;
+
+void special_song(){
+	static unsch i = 0;
+	set_PWM(261.63);
+	while(i < 100){
+		++i;
+	}
+	i = 0;
+	set_PWM(329.63);
+	while(i < 100){
+		++i;
+	}
+	i = 0;
+	set_PWM(392.00);
+	while(i < 100){
+		++i;
+	}
+	i = 0;
+	set_PWM(523.25);
+	while(i < 100){
+		++i;
+	}
+	i = 0;	
+	set_PWM(0);	
+}
 
 void titleScreen() {
 	LCD_ClearScreen();

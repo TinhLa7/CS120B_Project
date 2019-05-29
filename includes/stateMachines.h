@@ -70,7 +70,16 @@ int JoystickActions(int state) {
 		case J_down: set_PWM(261.63); break;
 		case J_left: set_PWM(329.63); break;
 		case J_right: set_PWM(392.00); break;
-		case J_end: set_PWM(100.00); break;
+		case J_end:
+			/*if(H_SCORE < sTime){
+				eeprom_update_word (( uint16_t *) 46 , (uint16_t)sTime );
+				special_song();
+			} 
+			else { set_PWM(100.00); } */
+				
+			//test
+			if(sTime >= 50)
+		break;
 		default: break;
 	} // State actions
 	return state;
@@ -141,7 +150,6 @@ int projectile_fct(int state) {
 enum Screen { Screen_Init, GameMenu, screenButton, screenRefresh, game_over1, game_over2, reset_score } screen_state;
 int TickFct_LCD_Output(int state) {
 	switch(state) { // Transitions
-		//	b3 = (~PINA) & 0x10;
 		case Screen_Init:
 		sTime = 0;
 		if(b1 && mTime < MENU_REFRESH_TIME) {
@@ -178,9 +186,10 @@ int TickFct_LCD_Output(int state) {
 		case screenRefresh:
 		for (unsch i = 0; i < total_en; i++) {
 			if(player == en[i].drawPosition) {
-				if(H_SCORE < (uint16_t)sTime)
-				state = game_over2;
-				else state = game_over1;
+				//if(H_SCORE < (uint16_t)sTime)
+				// test
+				if(sTime >= 50) {state = game_over2;}
+				else {state = game_over1;}
 			}
 		}
 		break;
@@ -221,11 +230,11 @@ int TickFct_LCD_Output(int state) {
 		gameOverScreen1();
 		break;
 		case game_over2:
-		eeprom_update_word (( uint16_t *) 46 , (uint16_t)sTime );
+		//eeprom_update_word (( uint16_t *) 46 , (uint16_t)sTime );
 		gameOverScreen2();
 		break;
 		case reset_score:
-		eeprom_update_word((uint16_t *)46, (uint16_t) 0); break;
+	//	eeprom_update_word((uint16_t *)46, (uint16_t) 0); break;
 		default: break;
 	} // State actions
 	screen_state = state;

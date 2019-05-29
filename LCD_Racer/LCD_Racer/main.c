@@ -20,26 +20,24 @@
 #include "stateMachines.h"
 
 int main() {
-	DDRA = 0x00; PORTA = 0xFF; //Setting A to be input (Input from Analog Stick)
-	DDRB = 0xFF; PORTB = 0x40; //Setting B to be output (Speaker at PB4)
-	DDRC = 0xFF; PORTC = 0x00; //Setting C to be output (LCD Screen)
-	DDRD = 0xFF; PORTD = 0x00; //Setting D to be output (LCD Screen)
+	DDRA = 0x00; PORTA = 0xFF; 
+	DDRB = 0xFF; PORTB = 0x40; 
+	DDRC = 0xFF; PORTC = 0x00; 
+	DDRD = 0xFF; PORTD = 0x00; 
 	
-	// Initializes the LCD display and ADC functionality
 	LCD_init();
 	ADC_init();
 	PWM_on();
 	
 	gTime = 0;
 
-	Joystick = Init; // Initial state
+	Joystick = Init; 
 	screen_state = Screen_Init;
 	enemy = en_spawn;
 	projectile_states = projectile_Init;
 	
-	PORTB = PORTC = 0; // Init outputs
+	PORTB = PORTC = 0; 
 	
-	// Priority assigned to lower position tasks in array
 	unsch i=0;
 	tasks[i].state = Init;
 	tasks[i].period = periodJoystick;
@@ -67,13 +65,15 @@ int main() {
 	TimerSet(tasksPeriodGCD);
 	TimerOn();
 	
-	eeprom_update_word((uint16_t *) 46, (uint16_t) 0);
+	//eeprom_update_word((uint16_t *) 46, (uint16_t) 0);
 
 	while(1) {
-		b1 = (~PINA) & 0x20;		//PA5
-		b2 = (~PINA) & 0x04;	    //PA2
-		b3 = (~PINA) & 0x10;        //PA3
-	} // while (1)
+		b1 = (~PINA) & 0x20;		
+		b2 = (~PINA) & 0x04;	    
+		b3 = (~PINA) & 0x10;        
+	} 
 	
 	return 0;
 }
+
+// TODO: Get speaker to play mini-song on hi-score screen
