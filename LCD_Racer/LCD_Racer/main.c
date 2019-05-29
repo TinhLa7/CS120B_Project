@@ -32,7 +32,7 @@ int main() {
 	gTime = 0;
 
 	Joystick = Init; 
-	screen_state = Screen_Init;
+	screen_state = TitleScreen;
 	enemy = en_spawn;
 	projectile_states = projectile_Init;
 	
@@ -57,7 +57,7 @@ int main() {
 	tasks[i].TickFct = &projectile_fct;
 
 	++i;
-	tasks[i].state = Screen_Init;
+	tasks[i].state = ScreenInit;/*TitleScreen*/;
 	tasks[i].period = periodLCD_Output;
 	tasks[i].elapsedTime = tasks[i].period;
 	tasks[i].TickFct = &TickFct_LCD_Output;

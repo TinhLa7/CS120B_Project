@@ -150,41 +150,62 @@ int projectile_fct(int state) {
 	return state;
 }
 
-enum Screen { TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenRefresh, game_over1, game_over2, reset_score } screen_state;
+enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over2, reset_score } screen_state;
 int TickFct_LCD_Output(int state) {
 	switch(state) { // Transitions
+		case ScreenInit:
+			state = TitleScreen;
+		break;
 		case TitleScreen:
-		sTime = 0;
-		if(b1 && mTime < MENU_REFRESH_TIME) {
-			mTime = 0;
-			state = screenRefresh;
-		}
-		else if (!b1 && mTime < MENU_REFRESH_TIME)
-		state = TitleScreen;
-		else if (b3 && mTime < MENU_REFRESH_TIME)
-		state = reset_score;
-		else if (!b1 && mTime == MENU_REFRESH_TIME) {
-			mTime = 0;
-			state = GameMenu;
-		}
+			sTime = 0;
+			/*if(b1 && mTime < MENU_REFRESH_TIME) {
+				mTime = 0;
+				state = screenRefresh;
+			}
+			else if (!b1 && mTime < MENU_REFRESH_TIME)
+			state = TitleScreen;
+			else if (b3 && mTime < MENU_REFRESH_TIME)
+			state = reset_score;
+			else if (!b1 && mTime == MENU_REFRESH_TIME) {
+				mTime = 0;
+				state = GameMenu;
+			}*/
+			state = TitleScreenWait;
+		break;
+		case TitleScreenWait:
+			if(b1){state = GameMenu;}
+			else {state = TitleScreenWait;}	
 		break;
 		case GameMenu:
-		if(b1 && mTime < MENU_REFRESH_TIME) {
-			mTime = 0;
-			state = screenRefresh;
-		}
-		else if (b3 && mTime < MENU_REFRESH_TIME)
-		state = reset_score;
-		else if (!b1 && mTime < MENU_REFRESH_TIME)
-		state = GameMenu;
-		else if (!b1 && mTime == MENU_REFRESH_TIME) {
-			mTime = 0;
-			state = TitleScreen;
-		}
+			/*if(b1 && mTime < MENU_REFRESH_TIME) {
+				mTime = 0;
+				state = screenRefresh;
+			}
+			else if (b3 && mTime < MENU_REFRESH_TIME)
+				state = reset_score;
+			else if (!b1 && mTime < MENU_REFRESH_TIME)
+				state = GameMenu;
+			else if (!b1 && mTime == MENU_REFRESH_TIME) {
+				mTime = 0;
+				state = TitleScreen;
+			}*/
+			state = GameMenuWait;
+		break;
+		case GameMenuWait:
+			if (b3 && mTime < MENU_REFRESH_TIME) { state = reset_score; }
+			else if (!b1 && mTime < MENU_REFRESH_TIME) { state = GameMenuWait; }
+			else if (!b1 && mTime == MENU_REFRESH_TIME) {
+				mTime = 0;
+				state = TitleScreen;
+			}
+			else if(b1 && mTime < MENU_REFRESH_TIME) {
+				mTime = 0;
+				state = screenRefresh;
+			}
 		break;
 		case screenButton:
-		if(b1) state = screenButton;
-		else state = TitleScreen;
+			if(b1) state = screenButton;
+			else state = TitleScreen;
 		break;
 		case screenRefresh:
 		for (unsch i = 0; i < total_en; i++) {
@@ -211,34 +232,34 @@ int TickFct_LCD_Output(int state) {
 	} // Transitions
 
 	switch(state) { // State actions
+		case ScreenInit: break;
 		case TitleScreen:
-		gTime++;
-		mTime++;
-		titleScreen();
+			gTime++;
+			mTime++;
+			titleScreen();
 		break;
+		case TitleScreenWait: break;
 		case GameMenu:
-		gTime++;
-		mTime++;
-		menuScreen();
+			gTime++;
+			mTime++;
+			menuScreen();
 		break;
-		case screenButton:
-		break;
+		case GameMenuWait: break;
+		case screenButton: break;
 		case screenRefresh:
-		sTime++;
-		gTime++;
-		updateJoyStick();
-		refreshScreen();
+			sTime++;
+			gTime++;
+			updateJoyStick();
+			refreshScreen();
 		break;
-		case game_over1:
-		gameOverScreen1();
-		break;
+		case game_over1: gameOverScreen1(); break;
 		case game_over2:
 			eeprom_update_word (&ADDRESS , (uint16_t)sTime );
 			gameOverScreen2();
 		break;
 		case reset_score:
 			eeprom_update_word (&ADDRESS , (uint16_t)sTime );
-			break;
+		break;
 		default: break;
 	} // State actions
 	screen_state = state;
