@@ -31,6 +31,14 @@ void titleScreen() {
 	LCD_DisplayString_NoClear(17, (const unsch *)("***** RACER ****"));
 }
 
+void menuScreen() {
+	unsch temp_array[4];
+	LCD_ClearScreen();
+	LCD_DisplayString_NoClear(1, (const unsch *)("Middle to Start"));
+	LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: "));
+	LCD_DisplayString_NoClear(26, LCD_To_String(H_SCORE, temp_array, 4));
+}
+
 int main(void)
 {
     DDRA = 0x00; PORTA = 0xFF; 
