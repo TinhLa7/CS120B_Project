@@ -4,8 +4,8 @@
 task tasks[TASKS_NUM];
 const unsl periodJoystick = 50;
 const unsl periodShoot = 25;
-const unsl periodLCD_Output = 100;
-const unsl periodEnemy_Generator = 100;
+const unsl periodLCD_Output = 50;
+const unsl periodEnemy_Generator = 50;
 const unsl tasksPeriodGCD = 25;
 
 void TimerISR() {

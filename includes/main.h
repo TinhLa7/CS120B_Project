@@ -10,7 +10,7 @@ const unssh DESTROYABLE_ENEMY = 244;
 const unssh PROJECTILE_SPRITE = 45;
 
 unsch player;
-unsch en_move_count, enMoveMult = 2;
+unsch en_move_count, enMoveMult = 5;
 unsch lTime, mTime = 0;
 unssh sTime, gTime;
 unsch spawnTopLimit = 0; 

@@ -92,21 +92,21 @@ enum projectile { projectile_Init, projectile_release, projectile_exist, project
 int projectile_fct(int state) {
 	switch(state) { // Transitions
 		case projectile_Init:
-		if(b1) state = projectile_exist;
-		else state = projectile_Init;
+			if(b1) state = projectile_exist;
+			else state = projectile_Init;
 		break;
 		case projectile_release:
-		if(b1) state = projectile_release;
-		else state = projectile_Init;
+			if(b1) state = projectile_release;
+			else state = projectile_Init;
 		break;
 		case projectile_exist:
-		if (b2 || projectileExists) state = projectile_move;
-		else state = projectile_exist;
+			if (b2 || projectileExists) state = projectile_move;
+			else state = projectile_exist;
 		break;
 		case projectile_move: state = projectile_exist; break;
 		case projectile_fade:
-		if(b1) state = check_b1;
-		else state = J_end;
+			if(b1) state = check_b1;
+			else state = J_end;
 		break;
 		default: break;
 	} // Transitions
@@ -116,32 +116,32 @@ int projectile_fct(int state) {
 		case projectile_release: break;
 		case projectile_exist: break;
 		case projectile_move:
-		if(projectileObject.drawPosition == 0) {
-			set_PWM(500.00);
-			projectileExists = 1;
-			projectileObject.drawPosition = player + 1;
-		}
-		else if (projectileObject.drawPosition != 0) {
-			if (projectileObject.drawPosition != 16 && projectileObject.drawPosition != 32 && projectileExists)
-			projectileObject.drawPosition++;
-			else {
-				projectileObject.drawPosition = 0;
-				projectileExists = 0;
+			if(projectileObject.drawPosition == 0) {
+				set_PWM(500.00);
+				projectileExists = 1;
+				projectileObject.drawPosition = player + 1;
 			}
-			for (unsch i = 0; i < total_en; i++) {
-				if (projectileObject.drawPosition == en[i].drawPosition && en[i].image == INVICIBLE_ENEMY) {
+			else if (projectileObject.drawPosition != 0) {
+				if (projectileObject.drawPosition != 16 && projectileObject.drawPosition != 32 && projectileExists)
+				projectileObject.drawPosition++;
+				else {
 					projectileObject.drawPosition = 0;
 					projectileExists = 0;
-					break;
 				}
-				if (projectileObject.drawPosition == en[i].drawPosition && en[i].image == DESTROYABLE_ENEMY) {
-					en[i].drawPosition = 0;
-					projectileObject.drawPosition = 0;
-					projectileExists = 0;
-					break;
+				for (unsch i = 0; i < total_en; i++) {
+					if (projectileObject.drawPosition == en[i].drawPosition && en[i].image == INVICIBLE_ENEMY) {
+						projectileObject.drawPosition = 0;
+						projectileExists = 0;
+						break;
+					}
+					if (projectileObject.drawPosition == en[i].drawPosition && en[i].image == DESTROYABLE_ENEMY) {
+						en[i].drawPosition = 0;
+						projectileObject.drawPosition = 0;
+						projectileExists = 0;
+						break;
+					}
 				}
-			}
-		}
+				}
 		break;
 		case projectile_fade: break;
 		default: break;
@@ -208,26 +208,24 @@ int TickFct_LCD_Output(int state) {
 			else state = TitleScreen;
 		break;
 		case screenRefresh:
-		for (unsch i = 0; i < total_en; i++) {
-			if(player == en[i].drawPosition) {
-				if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime)
-				// test
-				/*if(sTime >= 50)*/ {state = game_over2;}
-				else {state = game_over1;}
+			for (unsch i = 0; i < total_en; i++) {
+				if(player == en[i].drawPosition) {
+					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime)
+					// test
+					/*if(sTime >= 50)*/ {state = game_over2;}
+					else {state = game_over1;}
+				}
 			}
-		}
 		break;
 		case game_over1:
-		if(b1) state = screenButton;
-		else state = game_over1;
+			if(b1) state = screenButton;
+			else state = game_over1;
 		break;
 		case game_over2:
-		if(b1) state = screenButton;
-		else state = game_over2;
+			if(b1) state = screenButton;
+			else state = game_over2;
 		break;
-		case reset_score:
-		state = TitleScreen;
-		break;
+		case reset_score: state = TitleScreen; break;
 		default: state = TitleScreen; break;
 	} // Transitions
 
@@ -270,36 +268,36 @@ enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
 int enemy_fct(int state) {
 	switch(state) { // Transitions
 		case en_spawn:
-		lTime = 0;
-		en_move_count = 10;
-		if(b1) {
-			initEnemies();
-			initProjectiles();
-			srand(gTime);
-			state = en_refresh;
-		}
-		else state = en_spawn; break;
+			lTime = 0;
+			en_move_count = 10;
+			if(b1) {
+				initEnemies();
+				initProjectiles();
+				srand(gTime);
+				state = en_refresh;
+			}
+			else state = en_spawn; break;
 		case en_nothing:
-		if(b1) state = en_nothing;
-		else state = en_spawn;
+			if(b1) state = en_nothing;
+			else state = en_spawn;
 		break;
 		case en_refresh:
-		if (lTime < en_move_count) state = en_refresh;
-		else if (lTime == en_move_count) {
-			lTime = 0;
-			state = en_move;
-		}
-		for (unsch i = 0; i < total_en; i++) {
-			if (player == en[i].drawPosition) {
-				state = en_dead;
-				break;
+			if (lTime < en_move_count) state = en_refresh;
+			else if (lTime == en_move_count) {
+				lTime = 0;
+				state = en_move;
+				}
+			for (unsch i = 0; i < total_en; i++) {
+				if (player == en[i].drawPosition) {
+					state = en_dead;
+					break;
+				}
 			}
-		}
 		break;
 		case en_move: state = en_refresh; break;
 		case en_dead:
-		if(b1) state = en_nothing;
-		else state = en_dead;
+			if(b1) state = en_nothing;
+			else state = en_dead;
 		break;
 		default: state = en_spawn; break;
 	} // Transitions
