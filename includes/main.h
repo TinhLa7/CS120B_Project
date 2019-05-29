@@ -2,9 +2,8 @@
 #include <avr/eeprom.h>
 #include "defines.h"
 #include "pwm.c"
-unsch b1 = 0;
-unsch b2 = 0;
-unsch b3 = 0;
+
+uint16_t EEMEM ADDRESS;
 
 const unssh INVICIBLE_ENEMY = 248;
 const unssh DESTROYABLE_ENEMY = 244;
@@ -56,9 +55,9 @@ void menuScreen() {
 	unsch temp_array[4];
 	LCD_ClearScreen();
 	LCD_DisplayString_NoClear(1, (const unsch *)("Middle to Start"));
-	//LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: "));
-	LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: TEST"));
-	//LCD_DisplayString_NoClear(26, LCD_To_String(H_SCORE, temp_array, 4));
+	LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: "));
+	//LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: TEST"));
+	LCD_DisplayString_NoClear(26, LCD_To_String(eeprom_read_word(&ADDRESS), temp_array, 4));
 }
 
 void drawPlayer() {

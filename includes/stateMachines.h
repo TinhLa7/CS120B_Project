@@ -71,14 +71,17 @@ int JoystickActions(int state) {
 		case J_left: set_PWM(329.63); break;
 		case J_right: set_PWM(392.00); break;
 		case J_end:
-			/*if(H_SCORE < sTime){
-				eeprom_update_word (( uint16_t *) 46 , (uint16_t)sTime );
+			if(eeprom_read_word( &ADDRESS) < sTime){
+				eeprom_update_word (&ADDRESS , (uint16_t)sTime );
 				special_song();
 			} 
-			else { set_PWM(100.00); } */
+			else { set_PWM(100.00); } 
 				
 			//test
-			if(sTime >= 50)
+			/*if(sTime >= 50)
+				{
+					special_song();
+				}*/
 		break;
 		default: break;
 	} // State actions
@@ -186,9 +189,9 @@ int TickFct_LCD_Output(int state) {
 		case screenRefresh:
 		for (unsch i = 0; i < total_en; i++) {
 			if(player == en[i].drawPosition) {
-				//if(H_SCORE < (uint16_t)sTime)
+				if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime)
 				// test
-				if(sTime >= 50) {state = game_over2;}
+				/*if(sTime >= 50)*/ {state = game_over2;}
 				else {state = game_over1;}
 			}
 		}
@@ -230,11 +233,12 @@ int TickFct_LCD_Output(int state) {
 		gameOverScreen1();
 		break;
 		case game_over2:
-		//eeprom_update_word (( uint16_t *) 46 , (uint16_t)sTime );
-		gameOverScreen2();
+			eeprom_update_word (&ADDRESS , (uint16_t)sTime );
+			gameOverScreen2();
 		break;
 		case reset_score:
-	//	eeprom_update_word((uint16_t *)46, (uint16_t) 0); break;
+			eeprom_update_word (&ADDRESS , (uint16_t)sTime );
+			break;
 		default: break;
 	} // State actions
 	screen_state = state;

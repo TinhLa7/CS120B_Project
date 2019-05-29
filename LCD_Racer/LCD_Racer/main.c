@@ -64,16 +64,8 @@ int main() {
 	
 	TimerSet(tasksPeriodGCD);
 	TimerOn();
-	
-	//eeprom_update_word((uint16_t *) 46, (uint16_t) 0);
 
-	while(1) {
-		b1 = (~PINA) & 0x20;		
-		b2 = (~PINA) & 0x04;	    
-		b3 = (~PINA) & 0x10;        
-	} 
+	while(1) {} 
 	
 	return 0;
 }
-
-// TODO: Get speaker to play mini-song on hi-score screen
