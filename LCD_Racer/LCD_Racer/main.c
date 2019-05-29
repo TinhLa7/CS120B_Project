@@ -25,6 +25,9 @@ unsch spawnTopLimit = 0;
 unsch spawnBottomLimit = 0;
 unsch projectileExists = 0;
 
+not_player en[total_en];
+not_player projectileObject;
+
 void titleScreen() {
 	LCD_ClearScreen();
 	LCD_DisplayString_NoClear(1, (const unsch *)("****** LCD *****"));
@@ -38,6 +41,19 @@ void menuScreen() {
 	LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: "));
 	LCD_DisplayString_NoClear(26, LCD_To_String(H_SCORE, temp_array, 4));
 }
+
+void refreshScreen() {
+	LCD_ClearScreen();
+	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
+	LCD_Cursor(player);
+	LCD_WriteData('}');
+	LCD_Cursor(projectileObject.drawPosition);
+	LCD_WriteData(projectileObject.image);
+	for (unsch i = 0; i < total_en; i++) {
+		LCD_Cursor(en[i].drawPosition);
+		LCD_WriteData(en[i].image);
+	}
+}	
 
 int main(void)
 {
