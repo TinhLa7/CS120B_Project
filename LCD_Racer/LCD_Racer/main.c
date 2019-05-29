@@ -25,6 +25,12 @@ unsch spawnTopLimit = 0;
 unsch spawnBottomLimit = 0;
 unsch projectileExists = 0;
 
+void titleScreen() {
+	LCD_ClearScreen();
+	LCD_DisplayString_NoClear(1, (const unsch *)("****** LCD *****"));
+	LCD_DisplayString_NoClear(17, (const unsch *)("***** RACER ****"));
+}
+
 int main(void)
 {
     DDRA = 0x00; PORTA = 0xFF; 
