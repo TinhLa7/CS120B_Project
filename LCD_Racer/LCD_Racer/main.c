@@ -10,6 +10,7 @@
 #include <avr/eeprom.h>
 #include "defines.h"
 #include "io.c"
+#include "not_player.h"
 
 //sprites
 const unssh INVICIBLE_ENEMY = 248;
