@@ -42,17 +42,29 @@ void menuScreen() {
 	LCD_DisplayString_NoClear(26, LCD_To_String(H_SCORE, temp_array, 4));
 }
 
-void refreshScreen() {
-	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
+void drawPlayer(){
 	LCD_Cursor(player);
 	LCD_WriteData('}');
+}
+
+void drawProjectile(){
 	LCD_Cursor(projectileObject.drawPosition);
 	LCD_WriteData(projectileObject.image);
+}
+
+void drawEnemies(){
 	for (unsch i = 0; i < total_en; i++) {
 		LCD_Cursor(en[i].drawPosition);
 		LCD_WriteData(en[i].image);
 	}
+}
+
+void refreshScreen() {
+	LCD_ClearScreen();
+	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
+	drawPlayer();
+	drawProjectile();
+	drawEnemies()
 }	
 
 int main(void)
