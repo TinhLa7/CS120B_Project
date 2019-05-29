@@ -3,7 +3,8 @@
 #define unsl unsigned long
 #define TASKS_NUM 4
 #define total_en 4
-#define MENU_REFRESH_TIME 15
+#define MENU_REFRESH_TIME 100
+#define SONG_THRESHHOLD 250
 
 #define REF_AVCC (1 <<REFS0)
 #define REF_INT (1 << REFS0) | (1 << REFS1)

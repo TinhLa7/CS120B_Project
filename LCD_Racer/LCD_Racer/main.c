@@ -65,7 +65,9 @@ int main() {
 	TimerSet(tasksPeriodGCD);
 	TimerOn();
 
-	while(1) {} 
+	while(1) {
+		//TimerISR();
+	} 
 	
 	return 0;
 }

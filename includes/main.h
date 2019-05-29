@@ -5,12 +5,12 @@
 
 uint16_t EEMEM ADDRESS;
 
-const unssh INVICIBLE_ENEMY = 248;
+const unssh INVINCIBLE = 248;
 const unssh DESTROYABLE_ENEMY = 244;
 const unssh PROJECTILE_SPRITE = 45;
 
 unsch player;
-unsch en_move_count, enMoveMult = 5;
+unsch en_move_count, enMoveMult = 7;
 unsch lTime, mTime = 0;
 unssh sTime, gTime;
 unsch spawnTopLimit = 0; 
@@ -67,13 +67,13 @@ void drawPlayer() {
 
 void drawProjectile() {
 	LCD_Cursor(projectileObject.drawPosition);
-	LCD_WriteData(projectileObject.image);
+	LCD_WriteData(projectileObject.type);
 }
 
 void drawEnemies() {
 	for (unsch i = 0; i < total_en; i++) {
 		LCD_Cursor(en[i].drawPosition);
-		LCD_WriteData(en[i].image);
+		LCD_WriteData(en[i].type);
 	}
 }
 
@@ -92,6 +92,7 @@ void gameOverScreen1() {
 	LCD_DisplayString_NoClear(1, (const unsch *)("**GAME OVER**"));
 	LCD_DisplayString_NoClear(17, (const unsch *)("SCORE: "));
 	LCD_DisplayString_NoClear(24, LCD_To_String(sTime, temp_array, 6));
+	set_PWM(100.00);
 }
 
 void gameOverScreen2() {
@@ -101,21 +102,22 @@ void gameOverScreen2() {
 	LCD_DisplayString_NoClear(1, (const unsch *)("Congratulations!"));
 	LCD_DisplayString_NoClear(17, (const unsch *)("Hi SCORE: "));
 	LCD_DisplayString_NoClear(27, LCD_To_String(sTime, temp_array, 6));
+	set_PWM(261.63);
 }
 
 void initEnemies() {
 	for(unsch i = 0; i < total_en; i++) {
 		if(i % 2 == 0)
-			en[i].image = INVICIBLE_ENEMY;
+			en[i].type = INVINCIBLE;
 		else
-			en[i].image = DESTROYABLE_ENEMY;
+			en[i].type = DESTROYABLE_ENEMY;
 		en[i].drawPosition = 0;
 	}
 }
 
 void initProjectiles(){
 	projectileObject.drawPosition = 0;
-	projectileObject.image = PROJECTILE_SPRITE;
+	projectileObject.type = PROJECTILE_SPRITE;
 }
 
 int JoystickActions(int state);
