@@ -30,14 +30,14 @@ int JoystickActions(int state) {
 			else state = J_wait;
 		}
 		else if (coords[0] < JOYSTICK_INIT - SHIFT) {
-			if (player > player_start && player != player_above_limit) {
+			if (player > player_start and player != player_above_limit) {
 				player--;
 				state = J_left;
 			}
 			else state = J_wait;
 		}
 		else if (coords[0] > JOYSTICK_INIT + SHIFT) {
-			if (player < player_limits || (player > player_limits && player < player_upper_limit)) {
+			if (player < player_limits or (player > player_limits and player < player_upper_limit)) {
 				player++;
 				state = J_right;
 			}
@@ -100,7 +100,7 @@ int projectile_fct(int state) {
 			else state = projectile_Init;
 		break;
 		case projectile_exist:
-			if (b2 || projectileExists) state = projectile_move;
+			if (b2 or projectileExists) state = projectile_move;
 			else state = projectile_exist;
 		break;
 		case projectile_move: state = projectile_exist; break;
@@ -122,19 +122,19 @@ int projectile_fct(int state) {
 				projectileObject.drawPosition = player + 1;
 			}
 			else if (projectileObject.drawPosition != 0) {
-				if (projectileObject.drawPosition != 16 && projectileObject.drawPosition != 32 && projectileExists)
+				if (projectileObject.drawPosition != 16 and projectileObject.drawPosition != 32 and projectileExists)
 				projectileObject.drawPosition++;
 				else {
 					projectileObject.drawPosition = 0;
 					projectileExists = 0;
 				}
 				for (unsch i = 0; i < total_en; i++) {
-					if (projectileObject.drawPosition == en[i].drawPosition && en[i].type == INVINCIBLE) {
+					if (projectileObject.drawPosition == en[i].drawPosition and en[i].type == INVINCIBLE) {
 						projectileObject.drawPosition = 0;
 						projectileExists = 0;
 						break;
 					}
-					if (projectileObject.drawPosition == en[i].drawPosition && en[i].type == DESTROYABLE_ENEMY) {
+					if (projectileObject.drawPosition == en[i].drawPosition and en[i].type == DESTROYABLE_ENEMY) {
 						en[i].drawPosition = 0;
 						projectileObject.drawPosition = 0;
 						projectileExists = 0;
@@ -158,15 +158,15 @@ int TickFct_LCD_Output(int state) {
 		break;
 		case TitleScreen:
 			sTime = 0;
-			/*if(b1 && mTime < MENU_REFRESH_TIME) {
+			/*if(b1 and mTime < MENU_REFRESH_TIME) {
 				mTime = 0;
 				state = screenRefresh;
 			}
-			else if (!b1 && mTime < MENU_REFRESH_TIME)
+			else if (!b1 and mTime < MENU_REFRESH_TIME)
 			state = TitleScreen;
-			else if (b3 && mTime < MENU_REFRESH_TIME)
+			else if (b3 and mTime < MENU_REFRESH_TIME)
 			state = reset_score;
-			else if (!b1 && mTime == MENU_REFRESH_TIME) {
+			else if (!b1 and mTime == MENU_REFRESH_TIME) {
 				mTime = 0;
 				state = GameMenu;
 			}*/
@@ -177,28 +177,28 @@ int TickFct_LCD_Output(int state) {
 			else {state = TitleScreenWait;}	
 		break;
 		case GameMenu:
-			/*if(b1 && mTime < MENU_REFRESH_TIME) {
+			/*if(b1 and mTime < MENU_REFRESH_TIME) {
 				mTime = 0;
 				state = screenRefresh;
 			}
-			else if (b3 && mTime < MENU_REFRESH_TIME)
+			else if (b3 and mTime < MENU_REFRESH_TIME)
 				state = reset_score;
-			else if (!b1 && mTime < MENU_REFRESH_TIME)
+			else if (!b1 and mTime < MENU_REFRESH_TIME)
 				state = GameMenu;
-			else if (!b1 && mTime == MENU_REFRESH_TIME) {
+			else if (!b1 and mTime == MENU_REFRESH_TIME) {
 				mTime = 0;
 				state = TitleScreen;
 			}*/
 			state = GameMenuWait;
 		break;
 		case GameMenuWait:
-			if (b3 && mTime < MENU_REFRESH_TIME) { state = reset_score; }
-			else if (!b1 && mTime < MENU_REFRESH_TIME) { state = GameMenuWait; }
-			else if (!b1 && mTime == MENU_REFRESH_TIME) {
+			if (b3 and mTime < MENU_REFRESH_TIME) { state = reset_score; }
+			else if (!b1 and mTime < MENU_REFRESH_TIME) { state = GameMenuWait; }
+			else if (!b1 and mTime == MENU_REFRESH_TIME) {
 				mTime = 0;
 				state = TitleScreen;
 			}
-			else if(b1 && mTime < MENU_REFRESH_TIME) {
+			else if(b1 and mTime < MENU_REFRESH_TIME) {
 				mTime = 0;
 				state = screenRefresh;
 			}
@@ -314,20 +314,20 @@ int enemy_fct(int state) {
 		break;
 		case en_nothing: break;
 		case en_move:
-			if (sTime % enMoveMult == 0 && en_move_count > 1) {en_move_count--;}
+			if (sTime % enMoveMult == 0 and en_move_count > 1) {en_move_count--;}
 			
 			for(unsch i = 0; i < total_en; i++) {
-				if ((en[i].drawPosition > 1 && en[i].drawPosition < 18) || (en[i].drawPosition >  17 && en[i].drawPosition <= 33)) en[i].drawPosition--;
+				if ((en[i].drawPosition > 1 and en[i].drawPosition < 18) or (en[i].drawPosition >  17 and en[i].drawPosition <= 33)) en[i].drawPosition--;
 				else en[i].drawPosition = 0;
 			}
 			
 			for(unsch i = 0; i < total_en; i++) {
-				if (!spawnBottomLimit && (en[i].drawPosition == 31 || en[i].drawPosition == 32 || en[i].drawPosition == 33 || en[i].drawPosition == 16 || en[i].drawPosition == 17)) { spawnBottomLimit = 1;}
-				if (!spawnTopLimit && (en[i].drawPosition == 15 || en[i].drawPosition == 16 || en[i].drawPosition == 17 || en[i].drawPosition == 32 || en[i].drawPosition == 33)) {spawnTopLimit = 1;}
+				if (!spawnBottomLimit and (en[i].drawPosition == 31 or en[i].drawPosition == 32 or en[i].drawPosition == 33 or en[i].drawPosition == 16 or en[i].drawPosition == 17)) { spawnBottomLimit = 1;}
+				if (!spawnTopLimit and (en[i].drawPosition == 15 or en[i].drawPosition == 16 or en[i].drawPosition == 17 or en[i].drawPosition == 32 or en[i].drawPosition == 33)) {spawnTopLimit = 1;}
 			}
-			for(unsch i = 0; i < total_en && rand() % 2; i++) {
-				if (en[i].drawPosition == 0 && spawnBottomLimit == 0) {en[i].drawPosition = 33;}
-				if (en[i].drawPosition == 0 && spawnTopLimit == 0) {en[i].drawPosition = 17;}
+			for(unsch i = 0; i < total_en and rand() % 2; i++) {
+				if (en[i].drawPosition == 0 and spawnBottomLimit == 0) {en[i].drawPosition = 33;}
+				if (en[i].drawPosition == 0 and spawnTopLimit == 0) {en[i].drawPosition = 17;}
 			}
 			spawnBottomLimit = spawnTopLimit = 0;
 		break;
