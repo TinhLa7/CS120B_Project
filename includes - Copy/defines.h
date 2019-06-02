@@ -1,8 +1,8 @@
 #define unsch unsigned char
 #define unssh unsigned short
 #define unsl unsigned long
-#define TASKS_NUM 2
-#define total_en 7
+#define TASKS_NUM 3
+#define total_en 10
 #define MENU_REFRESH_TIME 100
 #define SONG_THRESHHOLD 250
 

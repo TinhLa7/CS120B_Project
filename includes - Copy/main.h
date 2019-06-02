@@ -71,7 +71,7 @@ void refreshEnemies(){
 			en[i].type = 1;
 		}
 		else {
-			en[i].image = TREE;
+			en[i].image = BIRD;
 			en[i].type = 2;
 		}
 	}
@@ -116,9 +116,11 @@ void initEnemies() {
 	for(unsch i = 0; i < total_en; i++) {
 		if(i % 2 == 0){
 			en[i].image = TREE;
+			en[i].type = 1;
 		}
 		else {
-			en[i].image = TREE;
+			en[i].image = BIRD;
+			en[i].type = 2;
 		}
 		en[i].drawPosition = 0;
 	}

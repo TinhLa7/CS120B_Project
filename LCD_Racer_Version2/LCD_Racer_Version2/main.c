@@ -17,9 +17,9 @@
 #include "scheduler.h"
 
 unsch player;
-unsch up;
+unsch up = 0;
+unsch up_cnt = 0;
 
-not_player obstacles[total_en];
 enum Joystick_States { Init, check_b1, J_wait, J_up, J_down, J_left, J_right, J_end } Joystick;
 void resetGame(){
 	en_move_count = 10, enMoveMult = 5;
@@ -42,10 +42,11 @@ int JoystickActions(int state) {
 		else state = Init;
 		break;
 		case J_wait:
-		if (coords[player_start] < JOYSTICK_INIT - SHIFT) {
+		if (coords[player_start] < JOYSTICK_INIT - SHIFT and up == 0) {
 			if (player >= player_above_limit) {
 				player = player - player_limits;
 				state = J_up;
+				up = 1;
 			}
 			else state = J_wait;
 		}
@@ -63,20 +64,21 @@ int JoystickActions(int state) {
 			}
 			else state = J_wait;
 		}
-		else if (up == 3) {
+		else if (up_cnt == 10) {
 			if (player <= player_limits) {
 				player = player + player_limits;
 				state = J_down;
 				up = 0;
+				up_cnt = 0;
 			}
 			else state = J_wait;
 		}
 		else {
 			state = J_wait;
-			up++;
+			up_cnt++;
 		} 
 		for (unsch i = 0; i < total_en; i++) {
-			if (player == obstacles[i].drawPosition) {
+			if (player == en[i].drawPosition) {
 				state = J_end;
 				break;
 			}
@@ -238,19 +240,6 @@ int enemy_fct(int state) {
 			else state = en_spawn;
 		break;
 		case en_refresh: 
-			/*if(sTime != 0 and sTime % 500 == 0)
-			{
-				for(unsch i = 0 ; i < total_en ; i++)
-				{
-					en[i].drawPosition = 0;
-				}
-				for(unsch i = 0; i < 100; i++)
-				{
-					
-				}
-				state = en_spawn;
-			}
-			else */
 			if (lTime < en_move_count) state = en_refresh;
 			else if (lTime == en_move_count) {
 				lTime = 0;
@@ -281,25 +270,32 @@ int enemy_fct(int state) {
 			if (sTime % enMoveMult == 0 and en_move_count > 1) {en_move_count--;}
 			
 			for(unsch i = 0; i < total_en; i++) {
-				if ((en[i].drawPosition > 1 and en[i].drawPosition < 18) or (en[i].drawPosition >  17 and en[i].drawPosition <= 33)) en[i].drawPosition--;
+				if ((en[i].drawPosition > 1 and en[i].drawPosition < 18 and en[i].type == 2) or (en[i].drawPosition >  17 and en[i].drawPosition <= 35 and en[i].type == 1)) en[i].drawPosition--;
 				else en[i].drawPosition = 0;
 			}
 			
 			for(unsch i = 0; i < total_en; i++) {
-				if (!spawnBottomLimit and (en[i].drawPosition == 31 or en[i].drawPosition == 32 or en[i].drawPosition == 33 or en[i].drawPosition == 16 or en[i].drawPosition == 17)) { spawnBottomLimit = 1;}
-				if (!spawnTopLimit and (en[i].drawPosition == 15 or en[i].drawPosition == 16 or en[i].drawPosition == 17 or en[i].drawPosition == 32 or en[i].drawPosition == 33)) {spawnTopLimit = 1;}
+				if (!spawnBottomLimit and (en[i].drawPosition == 31 or en[i].drawPosition == 32 or en[i].drawPosition == 35 or en[i].drawPosition == 16 or en[i].drawPosition == 17)) { spawnBottomLimit = 1;}
+				if (!spawnTopLimit and (en[i].drawPosition == 15 or en[i].drawPosition == 16 or en[i].drawPosition == 17 or en[i].drawPosition == 32 or en[i].drawPosition == 35)) {spawnTopLimit = 1;}
 			}
 			for(unsch i = 0; i < total_en and rand() % 2; i++) {
-				if (en[i].drawPosition == 0 and spawnBottomLimit == 0) {
-					en[i].drawPosition = 33;
+				if (en[i].drawPosition == 0 and spawnBottomLimit == 0 and en[i].type == 1 and i % 2 == 0) {
+					en[i].drawPosition = 35;
 				}
-				if (en[i].drawPosition == 0 and spawnTopLimit == 0) {
-					en[i].drawPosition = 17;
+				if (en[i].drawPosition == 0 and spawnTopLimit == 0 and en[i].type == 2) {
+					en[i].drawPosition = 16;
 				}
-				for(unsch j = 0; j < total_en; j++){
+			}
+			for(unsch i = 0; i < total_en; i += 2){
+				for(unsch j = 1; j < total_en; j += 2){
 					if( i != j){
-						if(en[i].drawPosition == en[j].drawPosition){
-							if(en[j].drawPosition <= 2)
+						if(en[i].drawPosition - player_limits == en[j].drawPosition){
+							en[j].drawPosition = 0;
+						}
+						if((en[i].drawPosition - player_limits) - 1 == en[j].drawPosition){
+							en[j].drawPosition = 0;
+						}
+						if((en[i].drawPosition - player_limits) + 1 == en[j].drawPosition){
 							en[j].drawPosition = 0;
 						}
 					}
@@ -332,6 +328,12 @@ int main(void)
 	tasks[i].period = periodJoystick;
 	tasks[i].elapsedTime = tasks[i].period;
 	tasks[i].TickFct = &JoystickActions;
+	
+	++i;
+	tasks[i].state = en_spawn;
+	tasks[i].period = periodEnemy_Generator;
+	tasks[i].elapsedTime = tasks[i].period;
+	tasks[i].TickFct = &enemy_fct;
 
 	++i;
 	tasks[i].state = ScreenInit;/*TitleScreen*/;
