@@ -1,25 +1,35 @@
-#pragma once
-#include "defines.h"
+/*
+ * LCD_Racer_Version2.c
+ *
+ * Created: 6/1/2019 12:33:58 PM
+ * Author : tinhl
+ */ 
+
+#include <avr/io.h>
+#include <io.c>
+#include <joystick.c>
+#include <defines.h>
+#include <stdlib.h>
+#include "pwm.c"
+#include "not_player.h"
 #include "main.h"
+#include "timer.c"
+#include "scheduler.h"
 
+unsch player;
+unsch up;
+
+not_player obstacles[total_en];
 enum Joystick_States { Init, check_b1, J_wait, J_up, J_down, J_left, J_right, J_end } Joystick;
-enum projectile { projectile_Init, projectile_release, projectile_exist, projectile_move, projectile_fade } projectile_states;
-enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over1Wait, game_over2, game_over2Wait, reset_score } screen_state;
-enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
-
 void resetGame(){
 	en_move_count = 10, enMoveMult = 5;
 	lTime = mTime = 0;
 	sTime = gTime = 0;
 	spawnTopLimit = 0;
 	spawnBottomLimit = 0;
-	projectileExists = 0;
 	Joystick = Init;
-	screen_state = TitleScreen;
-	enemy = en_spawn;
-	projectile_states = projectile_Init;
 }
-
+	
 int JoystickActions(int state) {
 	switch(state) { // Transitions
 		case Init:
@@ -39,13 +49,6 @@ int JoystickActions(int state) {
 			}
 			else state = J_wait;
 		}
-		else if (coords[player_start] > JOYSTICK_INIT + SHIFT) {
-			if (player <= player_limits) {
-				player = player + player_limits;
-				state = J_down;
-			}
-			else state = J_wait;
-		}
 		else if (coords[0] < JOYSTICK_INIT - SHIFT) {
 			if (player > player_start and player != player_above_limit) {
 				player--;
@@ -60,9 +63,20 @@ int JoystickActions(int state) {
 			}
 			else state = J_wait;
 		}
-		else state = J_wait;
+		else if (up == 3) {
+			if (player <= player_limits) {
+				player = player + player_limits;
+				state = J_down;
+				up = 0;
+			}
+			else state = J_wait;
+		}
+		else {
+			state = J_wait;
+			up++;
+		} 
 		for (unsch i = 0; i < total_en; i++) {
-			if (player == en[i].drawPosition) {
+			if (player == obstacles[i].drawPosition) {
 				state = J_end;
 				break;
 			}
@@ -105,75 +119,7 @@ int JoystickActions(int state) {
 	return state;
 }
 
-int projectile_fct(int state) {
-	switch(state) { // Transitions
-		case projectile_Init:
-			if(b1) state = projectile_exist;
-			else state = projectile_Init;
-		break;
-		case projectile_release:
-			if(b1) state = projectile_release;
-			else state = projectile_Init;
-		break;
-		case projectile_exist:
-			if (b2 or projectileExists) state = projectile_move;
-			else state = projectile_exist;
-		break;
-		case projectile_move: state = projectile_exist; break;
-		case projectile_fade:
-			if(b1) state = check_b1;
-			else state = J_end;
-		break;
-		default: break;
-	} // Transitions
-	
-	switch(state) { // State actions
-		case projectile_Init: break;
-		case projectile_release: break;
-		case projectile_exist: break;
-		case projectile_move:
-			if(projectileObject.drawPosition == 0) {
-				if(sTime < 500) set_PWM(293.66);
-				else if(sTime < 1500) set_PWM(349.23);
-				else if(sTime < 2500) set_PWM(440.00);
-				projectileExists = 1;
-				projectileObject.drawPosition = player + 1;
-			}
-			else if (projectileObject.drawPosition != 0) {
-				if (projectileObject.drawPosition != 16 and projectileObject.drawPosition != 32 and projectileExists)
-				projectileObject.drawPosition++;
-				else {
-					projectileObject.drawPosition = 0;
-					projectileExists = 0;
-				}
-				refreshEnemies(); //new
-				for (unsch i = 0; i < total_en; i++) {
-					if(en[i].image == INVINCIBLE){
-						en[i].type = 1;
-					}
-					else if(en[i].image == DESTROYABLE_ENEMY){
-						en[i].type = 2;
-					}
-					if (projectileObject.drawPosition == en[i].drawPosition){
-						projectileObject.drawPosition = 0;
-						projectileExists = 0;
-						if(en[i].type == 2) 
-						{ 
-							LCD_Cursor(en[i].drawPosition); //new
-							LCD_WriteData(' '); //new
-							en[i].drawPosition = 0;		
-						}
-						break;
-					}
-				}
-				}
-		break;
-		case projectile_fade: break;
-		default: break;
-	} // State actions
-	projectile_states = state;
-	return state;
-}
+enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over1Wait, game_over2, game_over2Wait, reset_score } screen_state;
 
 int TickFct_LCD_Output(int state) {
 	switch(state) { // Transitions
@@ -182,39 +128,13 @@ int TickFct_LCD_Output(int state) {
 		break;
 		case TitleScreen:
 			sTime = 0;
-			/*if(b1 and mTime < MENU_REFRESH_TIME) {
-				mTime = 0;
-				state = screenRefresh;
-			}
-			else if (!b1 and mTime < MENU_REFRESH_TIME)
-			state = TitleScreen;
-			else if (b3 and mTime < MENU_REFRESH_TIME)
-			state = reset_score;
-			else if (!b1 and mTime == MENU_REFRESH_TIME) {
-				mTime = 0;
-				state = GameMenu;
-			}*/
 			state = TitleScreenWait;
 		break;
 		case TitleScreenWait:
 			if(b1){state = GameMenu;}
 			else {state = TitleScreenWait;}	
 		break;
-		case GameMenu:
-			/*if(b1 and mTime < MENU_REFRESH_TIME) {
-				mTime = 0;
-				state = screenRefresh;
-			}
-			else if (b3 and mTime < MENU_REFRESH_TIME)
-				state = reset_score;
-			else if (!b1 and mTime < MENU_REFRESH_TIME)
-				state = GameMenu;
-			else if (!b1 and mTime == MENU_REFRESH_TIME) {
-				mTime = 0;
-				state = TitleScreen;
-			}*/
-			state = GameMenuWait;
-		break;
+		case GameMenu: state = GameMenuWait; break;
 		case GameMenuWait:
 			if (b3 and mTime < MENU_REFRESH_TIME) { state = reset_score; }
 			else if (!b1 and mTime < MENU_REFRESH_TIME) { state = GameMenuWait; }
@@ -234,9 +154,7 @@ int TickFct_LCD_Output(int state) {
 		case screenRefresh:
 			for (unsch i = 0; i < total_en; i++) {
 				if(player == en[i].drawPosition) {
-					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime)
-					// test
-					/*if(sTime >= 50)*/ {state = game_over2;}
+					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime) {state = game_over2;}
 					else {state = game_over1;}
 				}
 			}
@@ -302,6 +220,8 @@ int TickFct_LCD_Output(int state) {
 	return state;
 }
 
+enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
+
 int enemy_fct(int state) {
 	switch(state) { // Transitions
 		case en_spawn:
@@ -309,7 +229,6 @@ int enemy_fct(int state) {
 			en_move_count = 9; //10
 			if(b1) {
 				initEnemies();
-				initProjectiles();
 				srand(gTime);
 				state = en_refresh;
 			}
@@ -394,3 +313,37 @@ int enemy_fct(int state) {
 	enemy = state;
 	return state;
 }
+
+int main(void)
+{
+	DDRA = 0x00; PORTA = 0xFF;
+	DDRB = 0xFF; PORTB = 0x40;
+	DDRC = 0xFF; PORTC = 0x00;
+	DDRD = 0xFF; PORTD = 0x00;
+    LCD_init();
+    ADC_init();
+	PWM_on();
+	gTime = 0;
+	Joystick = Init;
+	screen_state = ScreenInit;
+	PORTB = PORTC = 0;
+	unsch i=0;
+	tasks[i].state = Init;
+	tasks[i].period = periodJoystick;
+	tasks[i].elapsedTime = tasks[i].period;
+	tasks[i].TickFct = &JoystickActions;
+
+	++i;
+	tasks[i].state = ScreenInit;/*TitleScreen*/;
+	tasks[i].period = periodLCD_Output;
+	tasks[i].elapsedTime = tasks[i].period;
+	tasks[i].TickFct = &TickFct_LCD_Output;
+	
+	TimerSet(tasksPeriodGCD);
+	TimerOn();
+    while (1) 
+    {
+		//TimerISR();
+    }
+}
+

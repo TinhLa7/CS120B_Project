@@ -6,9 +6,8 @@
 
 uint16_t EEMEM ADDRESS;
 
-const unssh INVINCIBLE = 255;
-const unssh DESTROYABLE_ENEMY = 252;
-const unssh PROJECTILE_SPRITE = 45;
+const unssh TREE = 200;
+const unssh BIRD = 252;
 
 unsch player;
 unsch en_move_count, enMoveMult = 5; // enMoveMult = 5;
@@ -16,7 +15,6 @@ unsch lTime, mTime = 0;
 unssh sTime, gTime = 0;
 unsch spawnTopLimit = 0; 
 unsch spawnBottomLimit = 0;
-unsch projectileExists = 0;
 
 not_player en[total_en];
 not_player projectileObject;
@@ -66,18 +64,15 @@ void drawPlayer() {
 	LCD_WriteData('}');
 }
 
-void drawProjectile() {
-	LCD_Cursor(projectileObject.drawPosition);
-	LCD_WriteData(projectileObject.image);
-}
-
 void refreshEnemies(){
 	for(unsch i = 0; i < total_en; i++) {
 		if(i % 2 == 0){
-			en[i].image = INVINCIBLE;
+			en[i].image = TREE;
+			en[i].type = 1;
 		}
 		else {
-			en[i].image = DESTROYABLE_ENEMY;
+			en[i].image = TREE;
+			en[i].type = 2;
 		}
 	}
 }
@@ -94,7 +89,6 @@ void refreshScreen() {
 	LCD_ClearScreen();
 	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
 	drawPlayer();
-	drawProjectile();
 	drawEnemies();	
 }
 
@@ -121,18 +115,13 @@ void gameOverScreen2() {
 void initEnemies() {
 	for(unsch i = 0; i < total_en; i++) {
 		if(i % 2 == 0){
-			en[i].image = INVINCIBLE;
+			en[i].image = TREE;
 		}
 		else {
-			en[i].image = DESTROYABLE_ENEMY;
+			en[i].image = TREE;
 		}
 		en[i].drawPosition = 0;
 	}
-}
-
-void initProjectiles(){
-	projectileObject.drawPosition = 0;
-	projectileObject.image = PROJECTILE_SPRITE;
 }
 
 int JoystickActions(int state);
