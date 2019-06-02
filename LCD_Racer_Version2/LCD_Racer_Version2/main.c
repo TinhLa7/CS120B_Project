@@ -42,7 +42,7 @@ int JoystickActions(int state) {
 		else state = Init;
 		break;
 		case J_wait:
-		if (coords[player_start] < JOYSTICK_INIT - SHIFT and up == 0) {
+		if (coords[player_start] < JOYSTICK_INIT - SHIFT) {
 			if (player >= player_above_limit) {
 				player = player - player_limits;
 				state = J_up;
@@ -103,19 +103,7 @@ int JoystickActions(int state) {
 		case J_down: set_PWM(261.63); break;
 		case J_left: set_PWM(329.63); break;
 		case J_right: set_PWM(392.00); break;
-		case J_end:
-			/*if(eeprom_read_word( &ADDRESS) < sTime){
-				//eeprom_update_word (&ADDRESS , (uint16_t)sTime );
-				special_song();
-			} 
-			else { set_PWM(100.00); } 
-				
-			//test
-			if(sTime >= 50)
-				{
-					special_song();
-				}*/
-		break;
+		case J_end:	break;
 		default: break;
 	} // State actions
 	return state;
@@ -157,6 +145,7 @@ int TickFct_LCD_Output(int state) {
 			for (unsch i = 0; i < total_en; i++) {
 				if(player == en[i].drawPosition) {
 					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime) {state = game_over2;}
+					//if(sTime > 200) { state = game_over2;}
 					else {state = game_over1;}
 				}
 			}
@@ -209,12 +198,12 @@ int TickFct_LCD_Output(int state) {
 		case game_over1: gameOverScreen1(); break;
 		case game_over1Wait: break;
 		case game_over2: 
-			//eeprom_update_word (&ADDRESS , (uint16_t)sTime );
+			eeprom_update_word (&ADDRESS , (uint16_t)sTime );
 			gameOverScreen2();
 		break;
 		case game_over2Wait: break;
 		case reset_score:
-			//eeprom_update_word (&ADDRESS , (uint16_t)sTime );
+			eeprom_update_word (&ADDRESS , (uint16_t)sTime );
 		break;
 		default: break;
 	} // State actions
@@ -228,7 +217,7 @@ int enemy_fct(int state) {
 	switch(state) { // Transitions
 		case en_spawn:
 			lTime = 0;
-			en_move_count = 9; //10
+			en_move_count = 8; //10
 			if(b1) {
 				initEnemies();
 				srand(gTime);

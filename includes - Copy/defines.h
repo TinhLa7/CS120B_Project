@@ -2,9 +2,10 @@
 #define unssh unsigned short
 #define unsl unsigned long
 #define TASKS_NUM 3
-#define total_en 10
+#define total_en 15
 #define MENU_REFRESH_TIME 100
 #define SONG_THRESHHOLD 250
+#define COOLDOWN 5
 
 #define REF_AVCC (1 <<REFS0)
 #define REF_INT (1 << REFS0) | (1 << REFS1)
