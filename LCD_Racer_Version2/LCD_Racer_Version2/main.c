@@ -28,13 +28,22 @@ void resetGame(){
 	spawnTopLimit = 0;
 	spawnBottomLimit = 0;
 	Joystick = Init;
+	for(unsch i = 0; i < total_en; i++)
+	{
+		en[i].drawPosition = 0;
+	}
+	drawEnemies();
 }
 	
 int JoystickActions(int state) {
 	switch(state) { // Transitions
 		case Init:
-		player = player_start;
-		if(b1) state = J_wait;
+			player = player_start;
+		if(b1) 
+		{ 
+			state = J_wait; 
+			resetGame();
+		}
 		else state = Init;
 		break;
 		case check_b1:
@@ -64,7 +73,7 @@ int JoystickActions(int state) {
 			}
 			else state = J_wait;
 		}
-		else if (up_cnt == 10) {
+		else if (up_cnt == 7) {
 			if (player <= player_limits) {
 				player = player + player_limits;
 				state = J_down;
@@ -306,8 +315,12 @@ int main(void)
 	DDRC = 0xFF; PORTC = 0x00;
 	DDRD = 0xFF; PORTD = 0x00;
     LCD_init();
+	LCD_WriteCommand(0x0C);
     ADC_init();
 	PWM_on();
+	LCD_Custom_Char(playerChar,5);
+	LCD_Custom_Char(customChar1,6);
+	LCD_Custom_Char(customChar2,7);
 	gTime = 0;
 	Joystick = Init;
 	screen_state = ScreenInit;

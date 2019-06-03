@@ -6,6 +6,50 @@
 
 uint16_t EEMEM ADDRESS;
 
+unsigned char playerChar[] = {
+	0x02,
+	0x05,
+	0x0A,
+	0x12,
+	0x0D,
+	0x04,
+	0x0A,
+	0x15
+};
+
+unsigned char customChar1[] = {
+	0x00,
+	0x04,
+	0x0A,
+	0x11,
+	0x00,
+	0x00,
+	0x00,
+	0x00
+};
+
+unsigned char customChar2[] = {
+	0x04,
+	0x04,
+	0x0E,
+	0x0E,
+	0x0E,
+	0x1F,
+	0x04,
+	0x1F
+};
+
+void LCD_Custom_Char (unsigned char *msg, const char loc)
+{
+	unsigned char i;
+	if(loc<8)
+	{
+		LCD_WriteCommand (0x40 + (loc*8));	/* Command 0x40 and onwards forces the device to point CGRAM address */
+		for(i=0;i<8;i++)	/* Write 8 byte for generation of 1 character */
+		LCD_WriteData(msg[i]);
+	}
+}
+
 const unssh TREE = 200;
 const unssh BIRD = 252;
 
@@ -61,7 +105,7 @@ void menuScreen() {
 
 void drawPlayer() {
 	LCD_Cursor(player);
-	LCD_WriteData('}');
+	LCD_WriteData(5);
 }
 
 void refreshEnemies(){
@@ -81,24 +125,30 @@ void drawEnemies() {
 	refreshEnemies();
 	for (unsch i = 0; i < total_en; i++) {
 		LCD_Cursor(en[i].drawPosition);
-		LCD_WriteData(en[i].image);
+		if(en[i].type == 2){
+			LCD_WriteData(6);
+		}
+		else if(en[i].type == 1){
+			LCD_WriteData(7);
+		}
+		//LCD_WriteData(en[i].image);
 	}
 }
 
 void refreshScreen() {
 	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
+	//LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
 	drawPlayer();
 	drawEnemies();	
 }
 
 void gameOverScreen1() {
-	unsch temp_array[6];
+	unsch temp_array[5];
 	
 	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(1, (const unsch *)("**GAME OVER**"));
-	LCD_DisplayString_NoClear(17, (const unsch *)("SCORE: "));
-	LCD_DisplayString_NoClear(24, LCD_To_String(sTime, temp_array, 6));
+	LCD_DisplayString_NoClear(1, (const unsch *)(" **GAME OVER**"));
+	LCD_DisplayString_NoClear(17, (const unsch *)(" ~~SCORE: "));
+	LCD_DisplayString_NoClear(27, LCD_To_String(sTime, temp_array, 5));
 	set_PWM(100.00);
 }
 
