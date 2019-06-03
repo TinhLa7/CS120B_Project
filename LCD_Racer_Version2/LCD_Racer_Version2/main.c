@@ -39,67 +39,71 @@ int JoystickActions(int state) {
 	switch(state) { // Transitions
 		case Init:
 			player = player_start;
-		if(b1) 
-		{ 
-			state = J_wait; 
 			resetGame();
-		}
-		else state = Init;
+			if(b1)
+			{
+				state = J_wait;
+			}
+			else state = Init;
 		break;
 		case check_b1:
-		if(b1) state = check_b1;
-		else state = Init;
+			if(b1) state = check_b1;
+			else 
+			{ 
+				state = Init;
+				resetGame();
+			}
 		break;
 		case J_wait:
-		if (coords[player_start] < JOYSTICK_INIT - SHIFT) {
-			if (player >= player_above_limit) {
-				player = player - player_limits;
-				state = J_up;
-				up = 1;
+			if (coords[player_start] < JOYSTICK_INIT - SHIFT) {
+				if (player >= player_above_limit) {
+					player = player - player_limits;
+					state = J_up;
+					up = 1;
+				}
+				else state = J_wait;
 			}
-			else state = J_wait;
-		}
-		else if (coords[0] < JOYSTICK_INIT - SHIFT) {
-			if (player > player_start and player != player_above_limit) {
-				player--;
-				state = J_left;
+			else if (coords[0] < JOYSTICK_INIT - SHIFT) {
+				if (player > player_start and player != player_above_limit) {
+					player--;
+					state = J_left;
+				}
+				else state = J_wait;
 			}
-			else state = J_wait;
-		}
-		else if (coords[0] > JOYSTICK_INIT + SHIFT) {
-			if (player < player_limits or (player > player_limits and player < player_upper_limit)) {
-				player++;
-				state = J_right;
+			else if (coords[0] > JOYSTICK_INIT + SHIFT) {
+				if (player < player_limits or (player > player_limits and player < player_upper_limit)) {
+					player++;
+					state = J_right;
+				}
+				else state = J_wait;
 			}
-			else state = J_wait;
-		}
-		else if (up_cnt == 7) {
-			if (player <= player_limits) {
-				player = player + player_limits;
-				state = J_down;
-				up = 0;
-				up_cnt = 0;
+			else if (up_cnt == 7) {
+				if (player <= player_limits) {
+					player = player + player_limits;
+					state = J_down;
+					up = 0;
+					up_cnt = 0;
+				}
+				else state = J_wait;
 			}
-			else state = J_wait;
-		}
-		else {
-			state = J_wait;
-			up_cnt++;
-		} 
-		for (unsch i = 0; i < total_en; i++) {
-			if (player == en[i].drawPosition) {
-				state = J_end;
-				break;
+			else {
+				state = J_wait;
+				up_cnt++;
 			}
-		}
+			for (unsch i = 0; i < total_en; i++) {
+				if (player == en[i].drawPosition) {
+					state = J_end;
+					break;
+				}
+				}
 		break;
 		case J_up: state = J_wait; break;
 		case J_down: state = J_wait; break;
 		case J_left: state = J_wait; break;
 		case J_right: state = J_wait; break;
 		case J_end:
-		if(b1) state = check_b1;
-		else state = J_end;
+			if(b1) state = check_b1;
+			else state = J_end;
 		break;
 		default: state = J_wait; break;
 	} // Transitions
