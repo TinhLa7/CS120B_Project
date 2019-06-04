@@ -61,7 +61,6 @@ unsch spawnTopLimit = 0;
 unsch spawnBottomLimit = 0;
 
 not_player en[total_en];
-not_player projectileObject;
 
 void special_song(){
 	static unsch i = 0;
