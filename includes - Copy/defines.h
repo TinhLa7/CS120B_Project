@@ -18,7 +18,6 @@
 #define player_start 1
 
 #define b1 ((~PINA) & 0x20)
-#define b2 ((~PINA) & 0x04)
 #define b3 ((~PINA) & 0x10)
 
 #define and &&

@@ -50,15 +50,8 @@ void LCD_Custom_Char (unsigned char *msg, const char loc)
 	}
 }
 
-const unssh TREE = 200;
-const unssh BIRD = 252;
-
-unsch player;
-unsch en_move_count, enMoveMult = 5; // enMoveMult = 5;
-unsch lTime, mTime = 0;
+unsch player, en_move_count, enMoveMult = 5, lTime, mTime = 0, spawnTopLimit = 0, spawnBottomLimit = 0;
 unssh sTime, gTime = 0;
-unsch spawnTopLimit = 0; 
-unsch spawnBottomLimit = 0;
 
 not_player en[total_en];
 
@@ -96,9 +89,8 @@ void titleScreen() {
 void menuScreen() {
 	unsch temp_array[4];
 	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(1, (const unsch *)("Middle to Start"));
+	LCD_DisplayString_NoClear(1, (const unsch *)("~~Start to Begin"));
 	LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: "));
-	//LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: TEST"));
 	LCD_DisplayString_NoClear(26, LCD_To_String(eeprom_read_word(&ADDRESS), temp_array, 4));
 }
 
@@ -110,11 +102,9 @@ void drawPlayer() {
 void refreshEnemies(){
 	for(unsch i = 0; i < total_en; i++) {
 		if(i % 2 == 0){
-			en[i].image = TREE;
 			en[i].type = 1;
 		}
 		else {
-			en[i].image = BIRD;
 			en[i].type = 2;
 		}
 	}
@@ -130,13 +120,16 @@ void drawEnemies() {
 		else if(en[i].type == 1){
 			LCD_WriteData(7);
 		}
-		//LCD_WriteData(en[i].image);
 	}
 }
 
 void refreshScreen() {
 	LCD_ClearScreen();
-	//LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
+	/*for(unsch i = 1; i < 32; i++){  //New 
+		LCD_Cursor(i); //
+		LCD_WriteData((int)' '); //	
+	} */
+	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
 	drawPlayer();
 	drawEnemies();	
 }
@@ -164,11 +157,9 @@ void gameOverScreen2() {
 void initEnemies() {
 	for(unsch i = 0; i < total_en; i++) {
 		if(i % 2 == 0){
-			en[i].image = TREE;
 			en[i].type = 1;
 		}
 		else {
-			en[i].image = BIRD;
 			en[i].type = 2;
 		}
 		en[i].drawPosition = 0;

@@ -22,15 +22,15 @@ unsch up_cnt = 0;
 
 enum Joystick_States { Init, check_b1, J_wait, J_up, J_down, J_left, J_right, J_end } Joystick;
 void resetGame(){
-	en_move_count = 10, enMoveMult = 5;
+	player = player_start;
+	en_move_count = 8, enMoveMult = 5;
 	lTime = mTime = 0;
 	sTime = gTime = 0;
 	spawnTopLimit = 0;
 	spawnBottomLimit = 0;
-	Joystick = Init;
-	for(unsch i = 0; i < total_en; i++)
+	for(unsch j = 0; j < total_en; j++)
 	{
-		en[i].drawPosition = 0;
+		en[j].drawPosition = 0;
 	}
 	drawEnemies();
 }
@@ -40,14 +40,11 @@ int JoystickActions(int state) {
 		case Init:
 			player = player_start;
 			resetGame();
-			if(b1)
-			{
-				state = J_wait;
-			}
-			else state = Init;
+			if(b1) { state = J_wait; }
+			else { state = Init; }
 		break;
 		case check_b1:
-			if(b1) state = check_b1;
+			if(b1) { state = check_b1; }
 			else 
 			{ 
 				state = Init;
@@ -61,30 +58,30 @@ int JoystickActions(int state) {
 					state = J_up;
 					up = 1;
 				}
-				else state = J_wait;
+				else { state = J_wait; }
 			}
 			else if (coords[0] < JOYSTICK_INIT - SHIFT) {
 				if (player > player_start and player != player_above_limit) {
 					player--;
 					state = J_left;
 				}
-				else state = J_wait;
+				else { state = J_wait; }
 			}
 			else if (coords[0] > JOYSTICK_INIT + SHIFT) {
 				if (player < player_limits or (player > player_limits and player < player_upper_limit)) {
 					player++;
 					state = J_right;
 				}
-				else state = J_wait;
+				else { state = J_wait; }
 			}
-			else if (up_cnt == 7) {
+			else if (up_cnt == 5) {
 				if (player <= player_limits) {
 					player = player + player_limits;
 					state = J_down;
 					up = 0;
-					up_cnt = 0;
 				}
-				else state = J_wait;
+				else { state = J_wait; }
+				up_cnt = 0;
 			}
 			else {
 				state = J_wait;
@@ -102,8 +99,8 @@ int JoystickActions(int state) {
 		case J_left: state = J_wait; break;
 		case J_right: state = J_wait; break;
 		case J_end:
-			if(b1) state = check_b1;
-			else state = J_end;
+			if(b1) { state = check_b1; }
+			else { state = J_end; }
 		break;
 		default: state = J_wait; break;
 	} // Transitions
@@ -151,13 +148,13 @@ int TickFct_LCD_Output(int state) {
 			}
 		break;
 		case screenButton:
-			if(b1) state = screenButton;
-			else state = TitleScreen;
+			if(b1) { state = screenButton; }
+			else { state = TitleScreen; }
 		break;
 		case screenRefresh:
 			for (unsch i = 0; i < total_en; i++) {
 				if(player == en[i].drawPosition) {
-					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime) {state = game_over2;}
+					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime) { state = game_over2; }
 					//if(sTime > 200) { state = game_over2;}
 					else {state = game_over1;}
 				}
@@ -238,11 +235,11 @@ int enemy_fct(int state) {
 			}
 			else state = en_spawn; break;
 		case en_nothing:
-			if(b1) state = en_nothing;
-			else state = en_spawn;
+			if(b1) { state = en_nothing; }
+			else { state = en_spawn; }
 		break;
 		case en_refresh: 
-			if (lTime < en_move_count) state = en_refresh;
+			if (lTime < en_move_count) { state = en_refresh; }
 			else if (lTime == en_move_count) {
 				lTime = 0;
 				state = en_move;
@@ -256,8 +253,8 @@ int enemy_fct(int state) {
 		break;
 		case en_move: state = en_refresh; break;
 		case en_dead:
-			if(b1) state = en_nothing;
-			else state = en_dead;
+			if(b1) { state = en_nothing; }
+			else { state = en_dead; }
 		break;
 		default: state = en_spawn; break;
 	} // Transitions
