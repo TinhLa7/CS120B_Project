@@ -19,10 +19,24 @@
 unsch player;
 unsch up = 0;
 unsch up_cnt = 0;
+unsch start = 1;
+unsch playerJumpLimit = 10;
+unsch speedDecrementer = 0;
 
 enum Joystick_States { Init, check_b1, J_wait, J_up, J_down, J_left, J_right, J_end } Joystick;
-void resetGame(){
+enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over1Wait, game_over2, game_over2Wait, reset_score, reset_game, beatHScore, beatHScoreWait } screen_state;
+enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
+	
+void restartGame(){
+//	unsch i = 0;
+	start = 1;
 	player = player_start;
+//	tasks[i].state = Init;
+	//++i;
+	//tasks[i].state = ScreenInit;
+	//++i;
+	//tasks[i].state = en_spawn;
+	playerJumpLimit = 10;
 	en_move_count = 8, enMoveMult = 5;
 	lTime = mTime = 0;
 	sTime = gTime = 0;
@@ -32,19 +46,24 @@ void resetGame(){
 	{
 		en[j].drawPosition = 0;
 	}
-	drawEnemies();
+	//drawEnemies();
+}	
+void resetGame(){
+
 }
 	
 int JoystickActions(int state) {
 	switch(state) { // Transitions
 		case Init:
-			player = player_start;
-			resetGame();
+			if(player != player_start){
+				player = player_start;
+				drawPlayer();
+			}
 			if(b1) { state = J_wait; }
 			else { state = Init; }
 		break;
 		case check_b1:
-			if(b1) { state = check_b1; }
+			if(b1) { restartGame(); }
 			else 
 			{ 
 				state = Init;
@@ -52,6 +71,10 @@ int JoystickActions(int state) {
 			}
 		break;
 		case J_wait:
+			if(playerJumpLimit > 0){ 
+				if(speedDecrementer) { playerJumpLimit -= speedDecrementer; }
+				speedDecrementer = 0;
+			}
 			if (coords[player_start] < JOYSTICK_INIT - SHIFT) {
 				if (player >= player_above_limit) {
 					player = player - player_limits;
@@ -74,7 +97,7 @@ int JoystickActions(int state) {
 				}
 				else { state = J_wait; }
 			}
-			else if (up_cnt == 5) {
+			else if (up_cnt == playerJumpLimit) {
 				if (player <= player_limits) {
 					player = player + player_limits;
 					state = J_down;
@@ -83,10 +106,19 @@ int JoystickActions(int state) {
 				else { state = J_wait; }
 				up_cnt = 0;
 			}
-			else {
+			else if(up) {
 				state = J_wait;
 				up_cnt++;
 			}
+			else if(start == 1) {
+				if (player <= player_limits) {
+					player = player + player_limits;
+					state = J_down;
+					up = 0;
+					start = 0;
+				}
+			}
+			else { state = J_wait; }
 			for (unsch i = 0; i < total_en; i++) {
 				if (player == en[i].drawPosition) {
 					state = J_end;
@@ -119,7 +151,7 @@ int JoystickActions(int state) {
 	return state;
 }
 
-enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over1Wait, game_over2, game_over2Wait, reset_score } screen_state;
+//enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over1Wait, game_over2, game_over2Wait, reset_score, reset_game } screen_state;
 
 int TickFct_LCD_Output(int state) {
 	switch(state) { // Transitions
@@ -155,17 +187,18 @@ int TickFct_LCD_Output(int state) {
 			for (unsch i = 0; i < total_en; i++) {
 				if(player == en[i].drawPosition) {
 					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime) { state = game_over2; }
-					//if(sTime > 200) { state = game_over2;}
-					else {state = game_over1;}
+					else { state = game_over1; }
 				}
 			}
+			if(sTime > 999) { state = beatHScore; }
 		break;
 		case game_over1: state = game_over1Wait; break;
 		case game_over1Wait:
 			if(b1) 
 			{ 
-				resetGame();
-				state = screenButton; 
+				//resetGame();
+				//state = screenButton;
+				state = reset_game; 
 			} 
 			else { state = game_over1Wait; }
 		break;
@@ -173,12 +206,23 @@ int TickFct_LCD_Output(int state) {
 		case game_over2Wait:
 			if(b1) 
 			{ 
-				resetGame();
-				state = screenButton; 
+				//resetGame();
+				//state = screenButton;
+				state = reset_game; 
 			}
 			else { state = game_over2Wait; }
 		break;
 		case reset_score: state = TitleScreen; break;
+		case reset_game: state = screenButton; break;
+		case beatHScore: state = beatHScoreWait; break;
+		case beatHScoreWait:
+		if(b1)
+		{
+			//resetGame();
+			//state = screenButton;
+			state = reset_game;
+		}
+		else { state = beatHScoreWait; }
 		default: state = TitleScreen; break;
 	} // Transitions
 
@@ -215,19 +259,23 @@ int TickFct_LCD_Output(int state) {
 		case reset_score:
 			eeprom_update_word (&ADDRESS , (uint16_t)sTime );
 		break;
+		case reset_game: restartGame(); break;
+		case beatHScore: gameOverScreen3(); 
+			eeprom_update_word (&ADDRESS , (uint16_t)999 );
+		break;
 		default: break;
 	} // State actions
 	screen_state = state;
 	return state;
 }
 
-enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
+//enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
 
 int enemy_fct(int state) {
 	switch(state) { // Transitions
 		case en_spawn:
 			lTime = 0;
-			en_move_count = 8; //10
+			en_move_count = 8; 
 			if(b1) {
 				initEnemies();
 				srand(gTime);
@@ -266,7 +314,11 @@ int enemy_fct(int state) {
 		break;
 		case en_nothing: break;
 		case en_move:
-			if (sTime % enMoveMult == 0 and en_move_count > 1) {en_move_count--;}
+			if (sTime % enMoveMult == 0 and en_move_count > 1) 
+			{
+				en_move_count--;
+				speedDecrementer = 1;
+			}
 			
 			for(unsch i = 0; i < total_en; i++) {
 				if ((en[i].drawPosition > 1 and en[i].drawPosition < 18 and en[i].type == 2) or (en[i].drawPosition >  17 and en[i].drawPosition <= 35 and en[i].type == 1)) en[i].drawPosition--;
