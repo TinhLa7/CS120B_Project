@@ -212,7 +212,7 @@ int TickFct_LCD_Output(int state) {
 			}
 			else { state = game_over2Wait; }
 		break;
-		case reset_score: state = TitleScreen; break;
+		case reset_score: state = ScreenInit; break;
 		case reset_game: state = screenButton; break;
 		case beatHScore: state = beatHScoreWait; break;
 		case beatHScoreWait:
