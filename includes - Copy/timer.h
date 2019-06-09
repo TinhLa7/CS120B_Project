@@ -1,8 +1,6 @@
 #pragma once
 #include "defines.h"
 
-//task struct
-
 typedef struct task {
 	int state;
 	unsl period;
