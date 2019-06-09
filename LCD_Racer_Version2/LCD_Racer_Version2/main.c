@@ -218,7 +218,7 @@ int TickFct_LCD_Output(int state) {
 		case screenRefresh:
 			score1;
 			gTime++;
-			updateJoyStick();
+			JoyStick();
 			refreshScreen();
 		break;
 		case game_over1: gameOverScreen1(); break;

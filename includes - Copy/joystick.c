@@ -7,13 +7,7 @@ void ADC_init() {
 	ADCSRA |= (1 << ADEN) | (1 << ADSC) | (1 << ADATE);
 }
 
-void wait(long numOP) {
-	for( long i = 0; i < numOP; i++){
-		asm("nop");
-	}
-}
-
-void updateJoyStick() {
+void JoyStick() {
 	unssh x;
 	unssh y;
 	
@@ -26,4 +20,10 @@ void updateJoyStick() {
 	
 	coords[0] = x;	
 	coords[1] = y;	
+}
+
+void wait(long num) {
+	for( long i = 0; i < num; i++){
+		asm("nop");
+	}
 }

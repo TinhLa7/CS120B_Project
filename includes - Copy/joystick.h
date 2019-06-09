@@ -4,5 +4,5 @@
 unssh coords[2];
 
 void ADC_init();
-void wait(long numOP);
-void updateJoyStick();
+void wait(long num);
+void JoyStick();
