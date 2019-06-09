@@ -52,7 +52,7 @@ void LCD_Custom_Char (unsigned char *msg, const char loc)
 
 unsch player, en_move_count, enMoveMult = 5, lTime, mTime = 0, spawnTopLimit = 0, spawnBottomLimit = 0;
 unssh sTime, gTime = 0;
-not_player en[total_en];
+not_player ob[total_en];
 
 void drawPlayer() {
 	LCD_Cursor(player);
@@ -83,17 +83,17 @@ void menuScreen() {
 
 void refreshEnemies(){
 	for(unsch i = 0; i < total_en; i++) {
-		if(i % 2 == 0){ en[i].type = 1; }
-		else { en[i].type = 2; }
+		if(i % 2 == 0){ ob[i].type = 1; }
+		else { ob[i].type = 2; }
 	}
 }
 
 void drawEnemies() {
 	refreshEnemies();
 	for (unsch i = 0; i < total_en; i++) {
-		LCD_Cursor(en[i].drawPosition);
-		if(en[i].type == 2){ LCD_WriteData(6); }
-		else if(en[i].type == 1){ LCD_WriteData(7); }
+		LCD_Cursor(ob[i].drawPosition);
+		if(ob[i].type == 2){ LCD_WriteData(6); }
+		else if(ob[i].type == 1){ LCD_WriteData(7); }
 	}
 }
 
@@ -132,9 +132,9 @@ void gameOverScreen3() {
 
 void initEnemies() {
 	for(unsch i = 0; i < total_en; i++) {
-		if(i % 2 == 0){ en[i].type = 1; }
-		else { en[i].type = 2; }
-		en[i].drawPosition = 0;
+		if(i % 2 == 0){ ob[i].type = 1; }
+		else { ob[i].type = 2; }
+		ob[i].drawPosition = 0;
 	}
 }
 

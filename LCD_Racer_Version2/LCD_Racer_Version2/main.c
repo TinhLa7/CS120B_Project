@@ -23,9 +23,9 @@ unsch start = 1;
 unsch playerJumpLimit = 10;
 unsch speedDecrementer = 0;
 
-enum Joystick_States { Init, check_b1, J_wait, J_up, J_down, J_left, J_right, J_end } Joystick;
+enum Joystick { Init, check_b1, J_wait, J_up, J_down, J_left, J_right, J_end } Joystick;
 enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over1Wait, game_over2, game_over2Wait, reset_score, reset_game, beatHScore, beatHScoreWait } screen_state;
-enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
+enum obstacle { obstacle_spawn, obstacle_nothing, obstacle_refresh, obstacle_move, obstacle_kill_player } enemy;
 	
 void restartGame(){
 	start = 1;
@@ -35,7 +35,7 @@ void restartGame(){
 	lTime = mTime = sTime = gTime = 0;
 	spawnTopLimit = 0;
 	spawnBottomLimit = 0;
-	for(unsch j = 0; j < total_en; j++)	{ en[j].drawPosition = 0; }
+	for(unsch j = 0; j < total_en; j++)	{ ob[j].drawPosition = 0; }
 }	
 	
 int JoystickActions(int state) {
@@ -103,7 +103,7 @@ int JoystickActions(int state) {
 			}
 			else { state = J_wait; }
 			for (unsch i = 0; i < total_en; i++) {
-				if (player == en[i].drawPosition) {
+				if (player == ob[i].drawPosition) {
 					state = J_end;
 					break;
 				}
@@ -164,7 +164,7 @@ int TickFct_LCD_Output(int state) {
 		break;
 		case screenRefresh:
 			for (unsch i = 0; i < total_en; i++) {
-				if(player == en[i].drawPosition) {
+				if(player == ob[i].drawPosition) {
 					if(HighScore < (uint16_t)sTime) { state = game_over2; }
 					else { state = game_over1; }
 				}
@@ -233,47 +233,47 @@ int TickFct_LCD_Output(int state) {
 
 int enemy_fct(int state) {
 	switch(state) { // Transitions
-		case en_spawn:
+		case obstacle_spawn:
 			enemyTime = 0;
 			en_move_count = 8; 
 			if(b1) {
 				initEnemies();
 				srand(gTime);
-				state = en_refresh;
+				state = obstacle_refresh;
 			}
-			else state = en_spawn; break;
-		case en_nothing:
-			if(b1) { state = en_nothing; }
-			else { state = en_spawn; }
+			else state = obstacle_spawn; break;
+		case obstacle_nothing:
+			if(b1) { state = obstacle_nothing; }
+			else { state = obstacle_spawn; }
 		break;
-		case en_refresh: 
-			if (lTime < en_move_count) { state = en_refresh; }
+		case obstacle_refresh: 
+			if (lTime < en_move_count) { state = obstacle_refresh; }
 			else if (lTime == en_move_count) {
 				enemyTime = 0;
-				state = en_move;
+				state = obstacle_move;
 				}
 			for (unsch i = 0; i < total_en; i++) {
-				if (player == en[i].drawPosition) {
-					state = en_dead;
+				if (player == ob[i].drawPosition) {
+					state = obstacle_kill_player;
 					break;
 				}
 			}
 		break;
-		case en_move: state = en_refresh; break;
-		case en_dead:
-			if(b1) { state = en_nothing; }
-			else { state = en_dead; }
+		case obstacle_move: state = obstacle_refresh; break;
+		case obstacle_kill_player:
+			if(b1) { state = obstacle_nothing; }
+			else { state = obstacle_kill_player; }
 		break;
-		default: state = en_spawn; break;
+		default: state = obstacle_spawn; break;
 	} // Transitions
 
 	switch(state) { // State actions
-		case en_refresh:
+		case obstacle_refresh:
 			lTime++;
 			refreshEnemies();
 		break;
-		case en_nothing: break;
-		case en_move:
+		case obstacle_nothing: break;
+		case obstacle_move:
 			if (speedUp) 
 			{
 				en_move_count--;
@@ -281,29 +281,29 @@ int enemy_fct(int state) {
 			}
 			
 			for(unsch i = 0; i < total_en; i++) {
-				if ((en[i].drawPosition > 1 and en[i].drawPosition < 18 and en[i].type == 2) or (en[i].drawPosition >  17 and en[i].drawPosition <= 35 and en[i].type == 1)) en[i].drawPosition--;
-				else en[i].drawPosition = 0;
-				if (!spawnBottomLimit and (en[i].drawPosition == 31 or en[i].drawPosition == 32 or en[i].drawPosition == 35 or en[i].drawPosition == 16 or en[i].drawPosition == 17)) { spawnBottomLimit = 1;}
-				if (!spawnTopLimit and (en[i].drawPosition == 15 or en[i].drawPosition == 16 or en[i].drawPosition == 17 or en[i].drawPosition == 32 or en[i].drawPosition == 35)) {spawnTopLimit = 1;}
+				if ((ob[i].drawPosition > 1 and ob[i].drawPosition < 18 and ob[i].type == 2) or (ob[i].drawPosition >  17 and ob[i].drawPosition <= 35 and ob[i].type == 1)) ob[i].drawPosition--;
+				else ob[i].drawPosition = 0;
+				if (!spawnBottomLimit and (ob[i].drawPosition == 31 or ob[i].drawPosition == 32 or ob[i].drawPosition == 35 or ob[i].drawPosition == 16 or ob[i].drawPosition == 17)) { spawnBottomLimit = 1;}
+				if (!spawnTopLimit and (ob[i].drawPosition == 15 or ob[i].drawPosition == 16 or ob[i].drawPosition == 17 or ob[i].drawPosition == 32 or ob[i].drawPosition == 35)) {spawnTopLimit = 1;}
 			
 				if(rand() % 2) {
-					if (en[i].drawPosition == 0 and spawnBottomLimit == 0 and en[i].type == 1 and i % 2 == 0) { en[i].drawPosition = 35; }
-					if (en[i].drawPosition == 0 and spawnTopLimit == 0 and en[i].type == 2) { en[i].drawPosition = 16; }					
+					if (ob[i].drawPosition == 0 and spawnBottomLimit == 0 and ob[i].type == 1 and i % 2 == 0) { ob[i].drawPosition = 35; }
+					if (ob[i].drawPosition == 0 and spawnTopLimit == 0 and ob[i].type == 2) { ob[i].drawPosition = 16; }					
 				}
 			}
 			
 			for(unsch i = 0; i < total_en; i += 2){
 				for(unsch j = 1; j < total_en; j += 2){
 					if( i != j){
-						if(en[i].drawPosition - player_limits == en[j].drawPosition){ en[j].drawPosition = 0; }
-						if((en[i].drawPosition - player_limits) - 1 == en[j].drawPosition){ en[j].drawPosition = 0; }
-						if((en[i].drawPosition - player_limits) + 1 == en[j].drawPosition){ en[j].drawPosition = 0; }
+						if(ob[i].drawPosition - player_limits == ob[j].drawPosition){ ob[j].drawPosition = 0; }
+						if((ob[i].drawPosition - player_limits) - 1 == ob[j].drawPosition){ ob[j].drawPosition = 0; }
+						if((ob[i].drawPosition - player_limits) + 1 == ob[j].drawPosition){ ob[j].drawPosition = 0; }
 					}
 				}
 			}
 			spawnBottomLimit = spawnTopLimit = 0;
 		break;
-		case en_dead: break;
+		case obstacle_kill_player: break;
 		default:break;
 	} // State actions
 	enemy = state;
@@ -334,7 +334,7 @@ int main(void)
 	tasks[i].TickFct = &JoystickActions;
 	
 	++i;
-	tasks[i].state = en_spawn;
+	tasks[i].state = obstacle_spawn;
 	tasks[i].period = periodEnemy_Generator;
 	tasks[i].elapsedTime = tasks[i].period;
 	tasks[i].TickFct = &enemy_fct;
