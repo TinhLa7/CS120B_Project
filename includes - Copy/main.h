@@ -83,12 +83,8 @@ void menuScreen() {
 
 void refreshEnemies(){
 	for(unsch i = 0; i < total_en; i++) {
-		if(i % 2 == 0){
-			en[i].type = 1;
-		}
-		else {
-			en[i].type = 2;
-		}
+		if(i % 2 == 0){ en[i].type = 1; }
+		else { en[i].type = 2; }
 	}
 }
 
@@ -96,12 +92,8 @@ void drawEnemies() {
 	refreshEnemies();
 	for (unsch i = 0; i < total_en; i++) {
 		LCD_Cursor(en[i].drawPosition);
-		if(en[i].type == 2){
-			LCD_WriteData(6);
-		}
-		else if(en[i].type == 1){
-			LCD_WriteData(7);
-		}
+		if(en[i].type == 2){ LCD_WriteData(6); }
+		else if(en[i].type == 1){ LCD_WriteData(7); }
 	}
 }
 
