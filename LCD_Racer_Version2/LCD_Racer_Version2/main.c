@@ -40,7 +40,6 @@ void restartGame(){
 	{
 		en[j].drawPosition = 0;
 	}
-	//drawEnemies();
 }	
 void resetGame(){
 
@@ -147,9 +146,7 @@ int JoystickActions(int state) {
 
 int TickFct_LCD_Output(int state) {
 	switch(state) { // Transitions
-		case ScreenInit:
-			state = TitleScreen;
-		break;
+		case ScreenInit: state = TitleScreen; break;
 		case TitleScreen:
 			sTime = 0;
 			state = TitleScreenWait;
@@ -178,7 +175,7 @@ int TickFct_LCD_Output(int state) {
 		case screenRefresh:
 			for (unsch i = 0; i < total_en; i++) {
 				if(player == en[i].drawPosition) {
-					if(eeprom_read_word( &ADDRESS) < (uint16_t)sTime) { state = game_over2; }
+					if(HighScore < (uint16_t)sTime) { state = game_over2; }
 					else { state = game_over1; }
 				}
 			}
@@ -186,8 +183,7 @@ int TickFct_LCD_Output(int state) {
 		break;
 		case game_over1: state = game_over1Wait; break;
 		case game_over1Wait:
-			if(b1) 
-			{ state = reset_game; } 
+			if(b1) { state = reset_game; } 
 			else { state = game_over1Wait; }
 		break;
 		case game_over2: state = game_over2Wait; break;
@@ -199,8 +195,7 @@ int TickFct_LCD_Output(int state) {
 		case reset_game: state = screenButton; break;
 		case beatHScore: state = beatHScoreWait; break;
 		case beatHScoreWait:
-		if(b1)
-		{ state = reset_game; }
+		if(b1) { state = reset_game; }
 		else { state = beatHScoreWait; }
 		default: state = TitleScreen; break;
 	} // Transitions

@@ -20,10 +20,12 @@
 #define b1 ((~PINA) & 0x20)
 #define b3 ((~PINA) & 0x10)
 
+// Code readability
 #define gameTime gTime++; mTime++;
 #define score1 sTime++;  
 #define enemyTime lTime
 #define speedUp sTime % enMoveMult == 0 and en_move_count > 1
+#define HighScore eeprom_read_word( &ADDRESS)
 
 #define and &&
 #define or ||
