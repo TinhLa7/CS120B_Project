@@ -52,33 +52,7 @@ void LCD_Custom_Char (unsigned char *msg, const char loc)
 
 unsch player, en_move_count, enMoveMult = 5, lTime, mTime = 0, spawnTopLimit = 0, spawnBottomLimit = 0;
 unssh sTime, gTime = 0;
-
 not_player en[total_en];
-
-void special_song(){
-	static unsch i = 0;
-	set_PWM(261.63);
-	while(i < 100){
-		++i;
-	}
-	i = 0;
-	set_PWM(329.63);
-	while(i < 100){
-		++i;
-	}
-	i = 0;
-	set_PWM(392.00);
-	while(i < 100){
-		++i;
-	}
-	i = 0;
-	set_PWM(523.25);
-	while(i < 100){
-		++i;
-	}
-	i = 0;	
-	set_PWM(0);	
-}
 
 void drawPlayer() {
 	LCD_Cursor(player);
@@ -133,32 +107,28 @@ void drawEnemies() {
 
 void refreshScreen() {
 	LCD_ClearScreen();
-	/*for(unsch i = 1; i < 32; i++){  //New 
-		LCD_Cursor(i); //
-		LCD_WriteData((int)' '); //	
-	} */
 	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
 	drawPlayer();
 	drawEnemies();	
 }
 
 void gameOverScreen1() {
-	unsch temp_array[4];
+	unsch array[4];
 	
 	LCD_ClearScreen();
 	LCD_DisplayString_NoClear(1, (const unsch *)(" **GAME OVER**"));
 	LCD_DisplayString_NoClear(17, (const unsch *)("~~~SCORE = "));
-	LCD_DisplayString_NoClear(28, LCD_To_String(sTime, temp_array, 4));
+	LCD_DisplayString_NoClear(28, LCD_To_String(sTime, array, 4));
 	set_PWM(100.00);
 }
 
 void gameOverScreen2() {
-	unsch temp_array[4];
+	unsch array[4];
 	
 	LCD_ClearScreen();
 	LCD_DisplayString_NoClear(1, (const unsch *)("Congratulations!"));
 	LCD_DisplayString_NoClear(17, (const unsch *)("~Hi SCORE: "));
-	LCD_DisplayString_NoClear(28, LCD_To_String(sTime, temp_array, 4));
+	LCD_DisplayString_NoClear(28, LCD_To_String(sTime, array, 4));
 	set_PWM(261.63);
 }
 
@@ -170,12 +140,8 @@ void gameOverScreen3() {
 
 void initEnemies() {
 	for(unsch i = 0; i < total_en; i++) {
-		if(i % 2 == 0){
-			en[i].type = 1;
-		}
-		else {
-			en[i].type = 2;
-		}
+		if(i % 2 == 0){ en[i].type = 1; }
+		else { en[i].type = 2; }
 		en[i].drawPosition = 0;
 	}
 }

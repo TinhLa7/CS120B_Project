@@ -3,6 +3,6 @@
 
 unssh coords[2];
 
-void ADC_init();
 void wait(long num);
+void ADC_init();
 void JoyStick();

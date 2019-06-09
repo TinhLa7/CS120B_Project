@@ -32,18 +32,11 @@ void restartGame(){
 	player = player_start;
 	playerJumpLimit = 10;
 	en_move_count = 8, enMoveMult = 5;
-	lTime = mTime = 0;
-	sTime = gTime = 0;
+	lTime = mTime = sTime = gTime = 0;
 	spawnTopLimit = 0;
 	spawnBottomLimit = 0;
-	for(unsch j = 0; j < total_en; j++)
-	{
-		en[j].drawPosition = 0;
-	}
+	for(unsch j = 0; j < total_en; j++)	{ en[j].drawPosition = 0; }
 }	
-void resetGame(){
-
-}
 	
 int JoystickActions(int state) {
 	switch(state) { // Transitions
@@ -58,10 +51,7 @@ int JoystickActions(int state) {
 		case check_b1:
 			if(b1) { restartGame(); }
 			else 
-			{ 
-				state = Init;
-				resetGame();
-			}
+			{ state = Init; }
 		break;
 		case J_wait:
 			if(playerJumpLimit > 0){ 
@@ -297,27 +287,17 @@ int enemy_fct(int state) {
 				if (!spawnTopLimit and (en[i].drawPosition == 15 or en[i].drawPosition == 16 or en[i].drawPosition == 17 or en[i].drawPosition == 32 or en[i].drawPosition == 35)) {spawnTopLimit = 1;}
 			
 				if(rand() % 2) {
-					if (en[i].drawPosition == 0 and spawnBottomLimit == 0 and en[i].type == 1 and i % 2 == 0) {
-						en[i].drawPosition = 35;
-					}
-					if (en[i].drawPosition == 0 and spawnTopLimit == 0 and en[i].type == 2) {
-						en[i].drawPosition = 16;
-						}					
+					if (en[i].drawPosition == 0 and spawnBottomLimit == 0 and en[i].type == 1 and i % 2 == 0) { en[i].drawPosition = 35; }
+					if (en[i].drawPosition == 0 and spawnTopLimit == 0 and en[i].type == 2) { en[i].drawPosition = 16; }					
 				}
 			}
 			
 			for(unsch i = 0; i < total_en; i += 2){
 				for(unsch j = 1; j < total_en; j += 2){
 					if( i != j){
-						if(en[i].drawPosition - player_limits == en[j].drawPosition){
-							en[j].drawPosition = 0;
-						}
-						if((en[i].drawPosition - player_limits) - 1 == en[j].drawPosition){
-							en[j].drawPosition = 0;
-						}
-						if((en[i].drawPosition - player_limits) + 1 == en[j].drawPosition){
-							en[j].drawPosition = 0;
-						}
+						if(en[i].drawPosition - player_limits == en[j].drawPosition){ en[j].drawPosition = 0; }
+						if((en[i].drawPosition - player_limits) - 1 == en[j].drawPosition){ en[j].drawPosition = 0; }
+						if((en[i].drawPosition - player_limits) + 1 == en[j].drawPosition){ en[j].drawPosition = 0; }
 					}
 				}
 			}
