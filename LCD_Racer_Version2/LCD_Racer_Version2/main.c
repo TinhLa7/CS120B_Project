@@ -28,14 +28,8 @@ enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, 
 enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
 	
 void restartGame(){
-//	unsch i = 0;
 	start = 1;
 	player = player_start;
-//	tasks[i].state = Init;
-	//++i;
-	//tasks[i].state = ScreenInit;
-	//++i;
-	//tasks[i].state = en_spawn;
 	playerJumpLimit = 10;
 	en_move_count = 8, enMoveMult = 5;
 	lTime = mTime = 0;
@@ -151,8 +145,6 @@ int JoystickActions(int state) {
 	return state;
 }
 
-//enum Screen { ScreenInit, TitleScreen, TitleScreenWait, GameMenu, GameMenuWait, screenButton, screenRefresh, game_over1, game_over1Wait, game_over2, game_over2Wait, reset_score, reset_game } screen_state;
-
 int TickFct_LCD_Output(int state) {
 	switch(state) { // Transitions
 		case ScreenInit:
@@ -195,21 +187,12 @@ int TickFct_LCD_Output(int state) {
 		case game_over1: state = game_over1Wait; break;
 		case game_over1Wait:
 			if(b1) 
-			{ 
-				//resetGame();
-				//state = screenButton;
-				state = reset_game; 
-			} 
+			{ state = reset_game; } 
 			else { state = game_over1Wait; }
 		break;
 		case game_over2: state = game_over2Wait; break;
 		case game_over2Wait:
-			if(b1) 
-			{ 
-				//resetGame();
-				//state = screenButton;
-				state = reset_game; 
-			}
+			if(b1) { state = reset_game; }
 			else { state = game_over2Wait; }
 		break;
 		case reset_score: state = ScreenInit; break;
@@ -217,11 +200,7 @@ int TickFct_LCD_Output(int state) {
 		case beatHScore: state = beatHScoreWait; break;
 		case beatHScoreWait:
 		if(b1)
-		{
-			//resetGame();
-			//state = screenButton;
-			state = reset_game;
-		}
+		{ state = reset_game; }
 		else { state = beatHScoreWait; }
 		default: state = TitleScreen; break;
 	} // Transitions
@@ -229,14 +208,12 @@ int TickFct_LCD_Output(int state) {
 	switch(state) { // State actions
 		case ScreenInit: break;
 		case TitleScreen:
-			gTime++;
-			mTime++;
+			gameTime;
 			titleScreen();
 		break;
 		case TitleScreenWait: break;
 		case GameMenu:
-			gTime++;
-			mTime++;
+			gameTime;
 			menuScreen();
 		break;
 		case GameMenuWait: 
@@ -244,7 +221,7 @@ int TickFct_LCD_Output(int state) {
 		break;
 		case screenButton: break;
 		case screenRefresh:
-			sTime++;
+			score1;
 			gTime++;
 			updateJoyStick();
 			refreshScreen();
@@ -269,12 +246,10 @@ int TickFct_LCD_Output(int state) {
 	return state;
 }
 
-//enum en_SM { en_spawn, en_nothing, en_refresh, en_move, en_dead } enemy;
-
 int enemy_fct(int state) {
 	switch(state) { // Transitions
 		case en_spawn:
-			lTime = 0;
+			enemyTime = 0;
 			en_move_count = 8; 
 			if(b1) {
 				initEnemies();
@@ -289,7 +264,7 @@ int enemy_fct(int state) {
 		case en_refresh: 
 			if (lTime < en_move_count) { state = en_refresh; }
 			else if (lTime == en_move_count) {
-				lTime = 0;
+				enemyTime = 0;
 				state = en_move;
 				}
 			for (unsch i = 0; i < total_en; i++) {
@@ -314,7 +289,7 @@ int enemy_fct(int state) {
 		break;
 		case en_nothing: break;
 		case en_move:
-			if (sTime % enMoveMult == 0 and en_move_count > 1) 
+			if (speedUp) 
 			{
 				en_move_count--;
 				speedDecrementer = 1;
@@ -323,20 +298,19 @@ int enemy_fct(int state) {
 			for(unsch i = 0; i < total_en; i++) {
 				if ((en[i].drawPosition > 1 and en[i].drawPosition < 18 and en[i].type == 2) or (en[i].drawPosition >  17 and en[i].drawPosition <= 35 and en[i].type == 1)) en[i].drawPosition--;
 				else en[i].drawPosition = 0;
-			}
-			
-			for(unsch i = 0; i < total_en; i++) {
 				if (!spawnBottomLimit and (en[i].drawPosition == 31 or en[i].drawPosition == 32 or en[i].drawPosition == 35 or en[i].drawPosition == 16 or en[i].drawPosition == 17)) { spawnBottomLimit = 1;}
 				if (!spawnTopLimit and (en[i].drawPosition == 15 or en[i].drawPosition == 16 or en[i].drawPosition == 17 or en[i].drawPosition == 32 or en[i].drawPosition == 35)) {spawnTopLimit = 1;}
-			}
-			for(unsch i = 0; i < total_en and rand() % 2; i++) {
-				if (en[i].drawPosition == 0 and spawnBottomLimit == 0 and en[i].type == 1 and i % 2 == 0) {
-					en[i].drawPosition = 35;
+			
+				if(rand() % 2) {
+					if (en[i].drawPosition == 0 and spawnBottomLimit == 0 and en[i].type == 1 and i % 2 == 0) {
+						en[i].drawPosition = 35;
+					}
+					if (en[i].drawPosition == 0 and spawnTopLimit == 0 and en[i].type == 2) {
+						en[i].drawPosition = 16;
+						}					
 				}
-				if (en[i].drawPosition == 0 and spawnTopLimit == 0 and en[i].type == 2) {
-					en[i].drawPosition = 16;
-				}
 			}
+			
 			for(unsch i = 0; i < total_en; i += 2){
 				for(unsch j = 1; j < total_en; j += 2){
 					if( i != j){
@@ -391,16 +365,13 @@ int main(void)
 	tasks[i].TickFct = &enemy_fct;
 
 	++i;
-	tasks[i].state = ScreenInit;/*TitleScreen*/;
+	tasks[i].state = ScreenInit;
 	tasks[i].period = periodLCD_Output;
 	tasks[i].elapsedTime = tasks[i].period;
 	tasks[i].TickFct = &TickFct_LCD_Output;
 	
 	TimerSet(tasksPeriodGCD);
 	TimerOn();
-    while (1) 
-    {
-		//TimerISR();
-    }
+    while (1) {}
 }
 
