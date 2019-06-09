@@ -31,11 +31,11 @@ void restartGame(){
 	start = 1;
 	player = player_start;
 	playerJumpLimit = 10;
-	en_move_count = 8, enMoveMult = 5;
+	ob_move_count = 8, obMoveMult = 5;
 	lTime = mTime = sTime = gTime = 0;
 	spawnTopLimit = 0;
 	spawnBottomLimit = 0;
-	for(unsch j = 0; j < total_en; j++)	{ ob[j].drawPosition = 0; }
+	for(unsch j = 0; j < total_ob; j++)	{ ob[j].drawPosition = 0; }
 }	
 	
 int JoystickActions(int state) {
@@ -102,7 +102,7 @@ int JoystickActions(int state) {
 				}
 			}
 			else { state = J_wait; }
-			for (unsch i = 0; i < total_en; i++) {
+			for (unsch i = 0; i < total_ob; i++) {
 				if (player == ob[i].drawPosition) {
 					state = J_end;
 					break;
@@ -163,7 +163,7 @@ int TickFct_LCD_Output(int state) {
 			else { state = TitleScreen; }
 		break;
 		case screenRefresh:
-			for (unsch i = 0; i < total_en; i++) {
+			for (unsch i = 0; i < total_ob; i++) {
 				if(player == ob[i].drawPosition) {
 					if(HighScore < (uint16_t)sTime) { state = game_over2; }
 					else { state = game_over1; }
@@ -231,13 +231,13 @@ int TickFct_LCD_Output(int state) {
 	return state;
 }
 
-int enemy_fct(int state) {
+int obstacles_fct(int state) {
 	switch(state) { // Transitions
 		case obstacle_spawn:
 			enemyTime = 0;
-			en_move_count = 8; 
+			ob_move_count = 8; 
 			if(b1) {
-				initEnemies();
+				initObstacles();
 				srand(gTime);
 				state = obstacle_refresh;
 			}
@@ -247,12 +247,12 @@ int enemy_fct(int state) {
 			else { state = obstacle_spawn; }
 		break;
 		case obstacle_refresh: 
-			if (lTime < en_move_count) { state = obstacle_refresh; }
-			else if (lTime == en_move_count) {
+			if (lTime < ob_move_count) { state = obstacle_refresh; }
+			else if (lTime == ob_move_count) {
 				enemyTime = 0;
 				state = obstacle_move;
 				}
-			for (unsch i = 0; i < total_en; i++) {
+			for (unsch i = 0; i < total_ob; i++) {
 				if (player == ob[i].drawPosition) {
 					state = obstacle_kill_player;
 					break;
@@ -270,17 +270,17 @@ int enemy_fct(int state) {
 	switch(state) { // State actions
 		case obstacle_refresh:
 			lTime++;
-			refreshEnemies();
+			refreshObstacles();
 		break;
 		case obstacle_nothing: break;
 		case obstacle_move:
 			if (speedUp) 
 			{
-				en_move_count--;
+				ob_move_count--;
 				speedDecrementer = 1;
 			}
 			
-			for(unsch i = 0; i < total_en; i++) {
+			for(unsch i = 0; i < total_ob; i++) {
 				if ((ob[i].drawPosition > 1 and ob[i].drawPosition < 18 and ob[i].type == 2) or (ob[i].drawPosition >  17 and ob[i].drawPosition <= 35 and ob[i].type == 1)) ob[i].drawPosition--;
 				else ob[i].drawPosition = 0;
 				if (!spawnBottomLimit and (ob[i].drawPosition == 31 or ob[i].drawPosition == 32 or ob[i].drawPosition == 35 or ob[i].drawPosition == 16 or ob[i].drawPosition == 17)) { spawnBottomLimit = 1;}
@@ -292,8 +292,8 @@ int enemy_fct(int state) {
 				}
 			}
 			
-			for(unsch i = 0; i < total_en; i += 2){
-				for(unsch j = 1; j < total_en; j += 2){
+			for(unsch i = 0; i < total_ob; i += 2){
+				for(unsch j = 1; j < total_ob; j += 2){
 					if( i != j){
 						if(ob[i].drawPosition - player_limits == ob[j].drawPosition){ ob[j].drawPosition = 0; }
 						if((ob[i].drawPosition - player_limits) - 1 == ob[j].drawPosition){ ob[j].drawPosition = 0; }
@@ -337,7 +337,7 @@ int main(void)
 	tasks[i].state = obstacle_spawn;
 	tasks[i].period = periodEnemy_Generator;
 	tasks[i].elapsedTime = tasks[i].period;
-	tasks[i].TickFct = &enemy_fct;
+	tasks[i].TickFct = &obstacles_fct;
 
 	++i;
 	tasks[i].state = ScreenInit;

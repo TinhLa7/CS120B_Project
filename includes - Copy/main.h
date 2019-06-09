@@ -50,9 +50,9 @@ void LCD_Custom_Char (unsigned char *msg, const char loc)
 	}
 }
 
-unsch player, en_move_count, enMoveMult = 5, lTime, mTime = 0, spawnTopLimit = 0, spawnBottomLimit = 0;
+unsch player, ob_move_count, obMoveMult = 5, lTime, mTime = 0, spawnTopLimit = 0, spawnBottomLimit = 0;
 unssh sTime, gTime = 0;
-not_player ob[total_en];
+not_player ob[total_ob];
 
 void drawPlayer() {
 	LCD_Cursor(player);
@@ -81,16 +81,16 @@ void menuScreen() {
 	drawPlayer();
 }
 
-void refreshEnemies(){
-	for(unsch i = 0; i < total_en; i++) {
+void refreshObstacles(){
+	for(unsch i = 0; i < total_ob; i++) {
 		if(i % 2 == 0){ ob[i].type = 1; }
 		else { ob[i].type = 2; }
 	}
 }
 
-void drawEnemies() {
-	refreshEnemies();
-	for (unsch i = 0; i < total_en; i++) {
+void drawObstacles() {
+	refreshObstacles();
+	for (unsch i = 0; i < total_ob; i++) {
 		LCD_Cursor(ob[i].drawPosition);
 		if(ob[i].type == 2){ LCD_WriteData(6); }
 		else if(ob[i].type == 1){ LCD_WriteData(7); }
@@ -101,7 +101,7 @@ void refreshScreen() {
 	LCD_ClearScreen();
 	LCD_DisplayStringNoClear(32, (const unsch *)(" "));	
 	drawPlayer();
-	drawEnemies();	
+	drawObstacles();	
 }
 
 void gameOverScreen1() {
@@ -130,8 +130,8 @@ void gameOverScreen3() {
 	LCD_DisplayStringNoClear(17, (const unsch *)("U won the race!"));
 }
 
-void initEnemies() {
-	for(unsch i = 0; i < total_en; i++) {
+void initObstacles() {
+	for(unsch i = 0; i < total_ob; i++) {
 		if(i % 2 == 0){ ob[i].type = 1; }
 		else { ob[i].type = 2; }
 		ob[i].drawPosition = 0;
@@ -141,4 +141,4 @@ void initEnemies() {
 int JoystickActions(int state);
 int projectile_fct(int state);
 int TickFct_LCD_Output(int state);
-int enemy_fct(int state);
+int obstacles_fct(int state);
