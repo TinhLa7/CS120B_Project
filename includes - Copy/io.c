@@ -58,7 +58,7 @@ void LCD_DisplayString( unsch column, const unsch* string) {
 	}
 }
 
-void LCD_DisplayString_NoClear(unsch column, const unsch* string) {
+void LCD_DisplayStringNoClear(unsch column, const unsch* string) {
 	unsch c = column;
 	while(*string) {
 		LCD_Cursor(c++);
@@ -85,7 +85,7 @@ void delay_ms(int miliSec) //for 8 Mhz crystal
 	}
 }
 
-unsch * LCD_To_String(uint16_t num, unsch * string, unsch size) {
+unsch * To_String(uint16_t num, unsch * string, unsch size) {
 	string[size - 1] = '\0';
 
 	for (short i = size - 2; i >= 0; i--) {

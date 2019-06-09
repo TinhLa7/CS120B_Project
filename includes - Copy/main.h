@@ -63,8 +63,8 @@ void titleScreen() {
 	LCD_ClearScreen();
 	LCD_Cursor(1);
 	LCD_WriteData(5);
-	LCD_DisplayString_NoClear(2, (const unsch *)("***** LCD *****"));
-	LCD_DisplayString_NoClear(17, (const unsch *)("***** RACER ****"));
+	LCD_DisplayStringNoClear(2, (const unsch *)("***** LCD *****"));
+	LCD_DisplayStringNoClear(17, (const unsch *)("***** RACER ****"));
 	player = player_start;
 	drawPlayer();
 }
@@ -74,9 +74,9 @@ void menuScreen() {
 	LCD_ClearScreen();
 	LCD_Cursor(1);
 	LCD_WriteData(5);
-	LCD_DisplayString_NoClear(2, (const unsch *)("~Start to Begin"));
-	LCD_DisplayString_NoClear(17, (const unsch *)("Hi Score: "));
-	LCD_DisplayString_NoClear(26, LCD_To_String(eeprom_read_word(&ADDRESS), temp_array, 4));
+	LCD_DisplayStringNoClear(2, (const unsch *)("~Start to Begin"));
+	LCD_DisplayStringNoClear(17, (const unsch *)("Hi Score: "));
+	LCD_DisplayStringNoClear(26, To_String(eeprom_read_word(&ADDRESS), temp_array, 4));
 	player = player_start;
 	drawPlayer();
 }
@@ -107,7 +107,7 @@ void drawEnemies() {
 
 void refreshScreen() {
 	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(32, (const unsch *)(" "));	
+	LCD_DisplayStringNoClear(32, (const unsch *)(" "));	
 	drawPlayer();
 	drawEnemies();	
 }
@@ -116,9 +116,9 @@ void gameOverScreen1() {
 	unsch array[4];
 	
 	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(1, (const unsch *)(" **GAME OVER**"));
-	LCD_DisplayString_NoClear(17, (const unsch *)("~~~SCORE = "));
-	LCD_DisplayString_NoClear(28, LCD_To_String(sTime, array, 4));
+	LCD_DisplayStringNoClear(1, (const unsch *)(" **GAME OVER**"));
+	LCD_DisplayStringNoClear(17, (const unsch *)("~~~SCORE = "));
+	LCD_DisplayStringNoClear(28, To_String(sTime, array, 4));
 	set_PWM(100.00);
 }
 
@@ -126,16 +126,16 @@ void gameOverScreen2() {
 	unsch array[4];
 	
 	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(1, (const unsch *)("Congratulations!"));
-	LCD_DisplayString_NoClear(17, (const unsch *)("~Hi SCORE: "));
-	LCD_DisplayString_NoClear(28, LCD_To_String(sTime, array, 4));
+	LCD_DisplayStringNoClear(1, (const unsch *)("Congratulations!"));
+	LCD_DisplayStringNoClear(17, (const unsch *)("~Hi SCORE: "));
+	LCD_DisplayStringNoClear(28, To_String(sTime, array, 4));
 	set_PWM(261.63);
 }
 
 void gameOverScreen3() {
 	LCD_ClearScreen();
-	LCD_DisplayString_NoClear(1, (const unsch *)("Congratulations!"));
-	LCD_DisplayString_NoClear(17, (const unsch *)("U won the race!"));
+	LCD_DisplayStringNoClear(1, (const unsch *)("Congratulations!"));
+	LCD_DisplayStringNoClear(17, (const unsch *)("U won the race!"));
 }
 
 void initEnemies() {

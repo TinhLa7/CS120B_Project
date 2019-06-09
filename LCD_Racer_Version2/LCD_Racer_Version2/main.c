@@ -58,7 +58,7 @@ int JoystickActions(int state) {
 				if(speedDecrementer) { playerJumpLimit -= speedDecrementer; }
 				speedDecrementer = 0;
 			}
-			if (coords[player_start] < JOYSTICK_INIT - SHIFT) {
+			if (position[player_start] < JOYSTICK_INIT - SHIFT) {
 				if (player >= player_above_limit) {
 					player = player - player_limits;
 					state = J_up;
@@ -66,14 +66,14 @@ int JoystickActions(int state) {
 				}
 				else { state = J_wait; }
 			}
-			else if (coords[0] < JOYSTICK_INIT - SHIFT) {
+			else if (position[0] < JOYSTICK_INIT - SHIFT) {
 				if (player > player_start and player != player_above_limit) {
 					player--;
 					state = J_left;
 				}
 				else { state = J_wait; }
 			}
-			else if (coords[0] > JOYSTICK_INIT + SHIFT) {
+			else if (position[0] > JOYSTICK_INIT + SHIFT) {
 				if (player < player_limits or (player > player_limits and player < player_upper_limit)) {
 					player++;
 					state = J_right;

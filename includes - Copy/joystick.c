@@ -24,6 +24,6 @@ void JoyStick() {
 	wait(300);
 	y = ADC;
 	
-	coords[0] = x;	
-	coords[1] = y;	
+	position[0] = x;	
+	position[1] = y;	
 }
